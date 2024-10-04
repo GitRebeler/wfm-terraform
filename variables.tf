@@ -51,14 +51,12 @@ variable "clientcode" {
 
 variable "vm-size-app" {
   type = string
-  # default = "Standard_D4ads_v5"
-  default = "Standard_DS1_v2"
+  default = "Standard_D4ads_v5"
 }
 
 variable "vm-size-web" {
   type = string
-  # default = "Standard_D2s_v3"
-  default = "Standard_DS1_v2"
+  default = "Standard_D2s_v3"
 }
 
 variable "vm-username-app1" {

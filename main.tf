@@ -1,7 +1,7 @@
 locals {
-  formatted_name = "${var.service}-${var.environment}-${var.region}-${var.instance}"
+  formatted_name        = "${var.service}-${var.environment}-${var.region}-${var.instance}"
   formatted_name_for_rg = "${var.service}-${var.environment}-${var.region}-${var.instance}-${var.clientcode}-${var.instance}"
-  formatted_vm_prefix = "${var.service}-${var.environment-short}${var.vm-base-os-type-acronym}"
+  formatted_vm_prefix   = "${var.service}-${var.environment-short}${var.vm-base-os-type-acronym}"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -56,8 +56,8 @@ resource "azurerm_network_interface" "nice-nic-app1" {
   enable_accelerated_networking = true
   location                      = var.location
   #name                          = "wfm-tl-app1-clb238_z1"
-  name                          = "${local.formatted_vm_prefix}-app1-${var.clientcode}_z1"
-  resource_group_name           = azurerm_resource_group.rg.name
+  name                = "${local.formatted_vm_prefix}-app1-${var.clientcode}_z1"
+  resource_group_name = azurerm_resource_group.rg.name
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -79,8 +79,8 @@ resource "azurerm_network_interface" "nice-nic-app2" {
   enable_accelerated_networking = true
   location                      = var.location
   # name                          = "wfm-tl-app2-clb995_z2"
-  name                          = "${local.formatted_vm_prefix}-app2-${var.clientcode}_z2"
-  resource_group_name           = azurerm_resource_group.rg.name
+  name                = "${local.formatted_vm_prefix}-app2-${var.clientcode}_z2"
+  resource_group_name = azurerm_resource_group.rg.name
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -102,8 +102,8 @@ resource "azurerm_network_interface" "nice-nic-web1" {
   enable_accelerated_networking = true
   location                      = var.location
   # name                          = "wfm-tl-web1-clb131_z1"
-  name                          = "${local.formatted_vm_prefix}-web1-${var.clientcode}_z1"
-  resource_group_name           = azurerm_resource_group.rg.name
+  name                = "${local.formatted_vm_prefix}-web1-${var.clientcode}_z1"
+  resource_group_name = azurerm_resource_group.rg.name
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -117,7 +117,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "nice-nic-
   backend_address_pool_id = azurerm_lb_backend_address_pool.nice-be-addr-pool.id
   ip_configuration_name   = "ipconfig1"
   # network_interface_id    = "/subscriptions/194a41a1-5592-4d4f-a8db-9eba93938aa2/resourceGroups/wfm-dev-use-01-clb-01-rg/providers/Microsoft.Network/networkInterfaces/wfm-tl-web1-clb131_z1"
-  network_interface_id      = azurerm_network_interface.nice-nic-web1.id
+  network_interface_id = azurerm_network_interface.nice-nic-web1.id
   depends_on = [
     azurerm_lb_backend_address_pool.nice-be-addr-pool,
     azurerm_network_interface.nice-nic-web1,
@@ -127,8 +127,8 @@ resource "azurerm_network_interface" "nice-nic-web2" {
   enable_accelerated_networking = true
   location                      = var.location
   # name                          = "wfm-tl-web2-clb788_z2"
-  name                          = "${local.formatted_vm_prefix}-web2-${var.clientcode}_z2"
-  resource_group_name           = azurerm_resource_group.rg.name
+  name                = "${local.formatted_vm_prefix}-web2-${var.clientcode}_z2"
+  resource_group_name = azurerm_resource_group.rg.name
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -376,8 +376,8 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web2" {
 
 # VM Managed Disks
 resource "azurerm_managed_disk" "nice-managed-disk-web1" {
-  create_option        = "Empty"
-  location             = var.location
+  create_option = "Empty"
+  location      = var.location
   # name                 = "wfm-tl-web1-clb_DataDisk_0"
   name                 = "${local.formatted_vm_prefix}-web1-${var.clientcode}_DataDisk_0"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -389,8 +389,8 @@ resource "azurerm_managed_disk" "nice-managed-disk-web1" {
   ]
 }
 resource "azurerm_managed_disk" "nice-managed-disk-web2" {
-  create_option        = "Empty"
-  location             = var.location
+  create_option = "Empty"
+  location      = var.location
   # name                 = "wfm-tl-web2-clb_DataDisk_0"
   name                 = "${local.formatted_vm_prefix}-web2-${var.clientcode}_DataDisk_0"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -431,8 +431,8 @@ resource "azurerm_lb" "nice-loadbalancer" {
   resource_group_name = azurerm_resource_group.rg.name
   sku                 = "Standard"
   frontend_ip_configuration {
-    name  = "${local.formatted_name_for_rg}-ip-${var.instance}"
-    zones = ["1", "2", "3"]
+    name      = "${local.formatted_name_for_rg}-ip-${var.instance}"
+    zones     = ["1", "2", "3"]
     subnet_id = var.subnet-ids.frontend
   }
   depends_on = [
@@ -499,13 +499,13 @@ resource "azurerm_postgresql_flexible_server" "nice-pgsql" {
   private_dns_zone_id = var.private-dns-zone-ids.database
   location            = var.location
   # name                = "wfm-tl-dbs-clb"
-  name                = "${local.formatted_vm_prefix}-dbs-${var.clientcode}"
-  resource_group_name = azurerm_resource_group.rg.name
-  administrator_login = var.vm-username-db
+  name                   = "${local.formatted_vm_prefix}-dbs-${var.clientcode}"
+  resource_group_name    = azurerm_resource_group.rg.name
+  administrator_login    = var.vm-username-db
   administrator_password = var.password
-  sku_name = "GP_Standard_D2s_v3"
-  storage_mb = 32768
-  version = 16
+  sku_name               = "GP_Standard_D2s_v3"
+  storage_mb             = 32768
+  version                = 16
   tags = {
     nice_client          = var.client
     nice_clientcode      = var.clientcode

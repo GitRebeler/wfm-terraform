@@ -1,91 +1,91 @@
 variable "location" {
-  type = string
+  type    = string
   default = "eastus"
 }
 
 variable "password" {
-  type = string
+  type    = string
   default = "E@gL3Ey3$!"
 }
 
 variable "service" {
-  type = string
+  type    = string
   default = "wfm"
 }
 
 variable "environment" {
-  type = string
+  type    = string
   default = "poc"
 }
 
 variable "environment-short" {
-  type = string
+  type    = string
   default = "p"
 }
 
 variable "vm-base-os-type-acronym" {
-  type = string
+  type    = string
   default = "l"
   #l for linux
 }
 
 variable "region" {
-  type = string
+  type    = string
   default = "use"
 }
 
 variable "instance" {
-  type = string
+  type    = string
   default = "03"
 }
 
 variable "client" {
-  type = string
+  type    = string
   default = "cloudlab"
 }
 
 variable "clientcode" {
-  type = string
+  type    = string
   default = "clb"
 }
 
 variable "vm-size-app" {
-  type = string
+  type    = string
   default = "Standard_D4ads_v5"
 }
 
 variable "vm-size-web" {
-  type = string
+  type    = string
   default = "Standard_D2s_v3"
 }
 
 variable "vm-username-app1" {
-  type = string
+  type    = string
   default = "wfmtlapp1clbadmin"
 }
 
 variable "vm-username-app2" {
-  type = string
+  type    = string
   default = "wfmtlapp2clbadmin"
 }
 
 variable "vm-username-web1" {
-  type = string
+  type    = string
   default = "wfmtlweb1clbadmin"
 }
 
 variable "vm-username-web2" {
-  type = string
+  type    = string
   default = "wfmtlweb2clbadmin"
 }
 
 variable "vm-username-db" {
-  type = string
+  type    = string
   default = "wfmtldbclbadmin"
 }
 
 variable "puppet-manifest" {
-  type = string
+  type    = string
   default = "wfm.pp"
 }
 
@@ -102,16 +102,16 @@ variable "image-config" {
 variable "subnet-ids" {
   type = object({
     file-storage = string
-    application = string
-    frontend = string
-    data = string
+    application  = string
+    frontend     = string
+    data         = string
   })
 }
 
 variable "private-dns-zone-ids" {
   type = object({
     file-storage = string
-    database = string
+    database     = string
   })
 }
 

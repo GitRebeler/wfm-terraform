@@ -1,42 +1,36 @@
-variable "location" {
+variable "loc" {
   type    = string
   default = "eastus"
 }
 
-variable "password" {
-  type    = string
-  default = "E@gL3Ey3$!"
-}
-
-variable "service" {
+variable "svc" {
   type    = string
   default = "wfm"
 }
 
-variable "environment" {
+variable "env" {
   type    = string
   default = "poc"
 }
 
-variable "environment-short" {
+variable "env-short" {
   type    = string
   default = "p"
 }
 
-variable "vm-base-os-type-acronym" {
-  type    = string
-  default = "l"
-  #l for linux
-}
-
-variable "region" {
+variable "rgn" {
   type    = string
   default = "use"
 }
 
-variable "instance" {
+variable "inst" {
   type    = string
   default = "03"
+}
+
+variable "clientcode" {
+  type    = string
+  default = "clb"
 }
 
 variable "client" {
@@ -44,9 +38,10 @@ variable "client" {
   default = "cloudlab"
 }
 
-variable "clientcode" {
+variable "vm-os" {
   type    = string
-  default = "clb"
+  default = "l"
+  #l for linux
 }
 
 variable "vm-size-app" {
@@ -84,12 +79,22 @@ variable "vm-username-db" {
   default = "wfmtldbclbadmin"
 }
 
+variable "password" {
+  type    = string
+  default = "E@gL3Ey3$!"
+}
+
 variable "puppet-manifest" {
   type    = string
   default = "wfm.pp"
 }
 
-# Objects are populated in common.auto.tfvars
+variable "deployment-number" {
+  type    = string
+  default = "01"
+}
+
+# Objects are populated in ../env-vars/<env>.tfvars
 variable "image-config" {
   type = object({
     offer     = string
@@ -112,11 +117,5 @@ variable "private-dns-zone-ids" {
   type = object({
     file-storage = string
     database     = string
-  })
-}
-
-variable "private-connection-resource-ids" {
-  type = object({
-    file-storage = string
   })
 }

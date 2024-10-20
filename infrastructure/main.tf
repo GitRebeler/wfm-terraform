@@ -1,17 +1,20 @@
 locals {
-  formatted_name        = "${var.service}-${var.environment}-${var.region}-${var.instance}"
-  formatted_name_for_rg = "${var.service}-${var.environment}-${var.region}-${var.instance}-${var.clientcode}-${var.instance}"
-  formatted_vm_prefix   = "${var.service}-${var.environment-short}${var.vm-base-os-type-acronym}"
+  formatted_name        = "${var.svc}-${var.env}-${var.rgn}-${var.inst}"
+  formatted_name_for_rg = "${var.svc}-${var.env}-${var.rgn}-${var.inst}-${var.clientcode}-${var.inst}"
+  formatted_vm_prefix   = "${var.svc}-${var.env-short}${var.vm-os}"
+  vm_name_prefix        = "${var.svc}-tl-"
+  vm_web_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "web", i, "-", var.clientcode)]
+  vm_app_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "app", i, "-", var.clientcode)]
 }
 
 resource "azurerm_resource_group" "rg" {
-  location = var.location
+  location = var.loc
   name     = "${local.formatted_name_for_rg}-rg"
 }
 
 # NSGs
 resource "azurerm_network_security_group" "nice-nsg-app1" {
-  location            = var.location
+  location            = var.loc
   name                = "${local.formatted_vm_prefix}-app1-${var.clientcode}-nsg"
   resource_group_name = azurerm_resource_group.rg.name
   depends_on = [
@@ -19,7 +22,7 @@ resource "azurerm_network_security_group" "nice-nsg-app1" {
   ]
 }
 resource "azurerm_network_security_group" "nice-nsg-app2" {
-  location            = var.location
+  location            = var.loc
   name                = "${local.formatted_vm_prefix}-app2-${var.clientcode}-nsg"
   resource_group_name = azurerm_resource_group.rg.name
   depends_on = [
@@ -27,7 +30,7 @@ resource "azurerm_network_security_group" "nice-nsg-app2" {
   ]
 }
 resource "azurerm_network_security_group" "nice-nsg-web1" {
-  location            = var.location
+  location            = var.loc
   name                = "${local.formatted_vm_prefix}-web1-${var.clientcode}-nsg"
   resource_group_name = azurerm_resource_group.rg.name
   depends_on = [
@@ -35,7 +38,7 @@ resource "azurerm_network_security_group" "nice-nsg-web1" {
   ]
 }
 resource "azurerm_network_security_group" "nice-nsg-web2" {
-  location            = var.location
+  location            = var.loc
   name                = "${local.formatted_vm_prefix}-web2-${var.clientcode}-nsg"
   resource_group_name = azurerm_resource_group.rg.name
   depends_on = [
@@ -43,7 +46,7 @@ resource "azurerm_network_security_group" "nice-nsg-web2" {
   ]
 }
 resource "azurerm_network_security_group" "nice-nsg-db" {
-  location            = var.location
+  location            = var.loc
   name                = "${local.formatted_vm_prefix}-db-${var.clientcode}-nsg"
   resource_group_name = azurerm_resource_group.rg.name
   depends_on = [
@@ -53,11 +56,10 @@ resource "azurerm_network_security_group" "nice-nsg-db" {
 
 # NICs
 resource "azurerm_network_interface" "nice-nic-app1" {
-  enable_accelerated_networking = true
-  location                      = var.location
-  #name                          = "wfm-tl-app1-clb238_z1"
-  name                = "${local.formatted_vm_prefix}-app1-${var.clientcode}_z1"
-  resource_group_name = azurerm_resource_group.rg.name
+  location                       = var.loc
+  name                           = "${local.formatted_vm_prefix}-app1-${var.clientcode}_z1"
+  resource_group_name            = azurerm_resource_group.rg.name
+  accelerated_networking_enabled = true
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -76,11 +78,10 @@ resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-as
   ]
 }
 resource "azurerm_network_interface" "nice-nic-app2" {
-  enable_accelerated_networking = true
-  location                      = var.location
-  # name                          = "wfm-tl-app2-clb995_z2"
-  name                = "${local.formatted_vm_prefix}-app2-${var.clientcode}_z2"
-  resource_group_name = azurerm_resource_group.rg.name
+  location                       = var.loc
+  name                           = "${local.formatted_vm_prefix}-app2-${var.clientcode}_z2"
+  resource_group_name            = azurerm_resource_group.rg.name
+  accelerated_networking_enabled = true
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -99,11 +100,10 @@ resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-as
   ]
 }
 resource "azurerm_network_interface" "nice-nic-web1" {
-  enable_accelerated_networking = true
-  location                      = var.location
-  # name                          = "wfm-tl-web1-clb131_z1"
-  name                = "${local.formatted_vm_prefix}-web1-${var.clientcode}_z1"
-  resource_group_name = azurerm_resource_group.rg.name
+  location                       = var.loc
+  name                           = "${local.formatted_vm_prefix}-web1-${var.clientcode}_z1"
+  resource_group_name            = azurerm_resource_group.rg.name
+  accelerated_networking_enabled = true
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -116,19 +116,17 @@ resource "azurerm_network_interface" "nice-nic-web1" {
 resource "azurerm_network_interface_backend_address_pool_association" "nice-nic-bea-asc-web1" {
   backend_address_pool_id = azurerm_lb_backend_address_pool.nice-be-addr-pool.id
   ip_configuration_name   = "ipconfig1"
-  # network_interface_id    = "/subscriptions/194a41a1-5592-4d4f-a8db-9eba93938aa2/resourceGroups/wfm-dev-use-01-clb-01-rg/providers/Microsoft.Network/networkInterfaces/wfm-tl-web1-clb131_z1"
-  network_interface_id = azurerm_network_interface.nice-nic-web1.id
+  network_interface_id    = azurerm_network_interface.nice-nic-web1.id
   depends_on = [
     azurerm_lb_backend_address_pool.nice-be-addr-pool,
     azurerm_network_interface.nice-nic-web1,
   ]
 }
 resource "azurerm_network_interface" "nice-nic-web2" {
-  enable_accelerated_networking = true
-  location                      = var.location
-  # name                          = "wfm-tl-web2-clb788_z2"
-  name                = "${local.formatted_vm_prefix}-web2-${var.clientcode}_z2"
-  resource_group_name = azurerm_resource_group.rg.name
+  location                       = var.loc
+  name                           = "${local.formatted_vm_prefix}-web2-${var.clientcode}_z2"
+  resource_group_name            = azurerm_resource_group.rg.name
+  accelerated_networking_enabled = true
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
@@ -158,9 +156,9 @@ resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-as
 
 resource "azurerm_private_endpoint" "nice-pvt-endpt" {
   # custom_network_interface_name = "wfm-dev-use-01-clb-01-sa-01-pe-01-nic"
-  custom_network_interface_name = "${var.service}-${var.environment}-${var.region}-${var.instance}-${var.clientcode}-${var.instance}-sa-${var.instance}-pe-${var.instance}-nic"
-  location                      = var.location
-  name                          = "${var.service}-${var.environment}-${var.region}-${var.instance}-${var.clientcode}-${var.instance}-sa-${var.instance}-pe-${var.instance}"
+  custom_network_interface_name = "${var.svc}-${var.env}-${var.rgn}-${var.inst}-${var.clientcode}-${var.inst}-sa-${var.inst}-pe-${var.inst}-nic"
+  location                      = var.loc
+  name                          = "${var.svc}-${var.env}-${var.rgn}-${var.inst}-${var.clientcode}-${var.inst}-sa-${var.inst}-pe-${var.inst}"
   resource_group_name           = azurerm_resource_group.rg.name
   subnet_id                     = var.subnet-ids.file-storage
   private_dns_zone_group {
@@ -169,8 +167,8 @@ resource "azurerm_private_endpoint" "nice-pvt-endpt" {
   }
   private_service_connection {
     is_manual_connection           = false
-    name                           = "${var.service}-${var.environment}-${var.region}-${var.instance}-${var.clientcode}-${var.instance}-sa-${var.instance}-pe-${var.instance}"
-    private_connection_resource_id = var.private-connection-resource-ids.file-storage
+    name                           = "${var.svc}-${var.env}-${var.rgn}-${var.inst}-${var.clientcode}-${var.inst}-sa-${var.inst}-pe-${var.inst}"
+    private_connection_resource_id = azurerm_storage_account.nice-storage-acct.id
     subresource_names              = ["file"]
   }
   depends_on = [
@@ -183,8 +181,8 @@ resource "azurerm_storage_account" "nice-storage-acct" {
   account_tier                     = "Standard"
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
-  location                         = var.location
-  name                             = "${var.service}${var.environment}${var.region}${var.instance}${var.clientcode}${var.instance}sa${var.instance}"
+  location                         = var.loc
+  name                             = "${var.svc}${var.env}${var.rgn}${var.inst}${var.clientcode}${var.inst}sa${var.inst}"
   public_network_access_enabled    = false
   resource_group_name              = azurerm_resource_group.rg.name
   depends_on = [
@@ -197,7 +195,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
   admin_password                  = var.password
   admin_username                  = var.vm-username-app1
   disable_password_authentication = false
-  location                        = var.location
+  location                        = var.loc
   name                            = "${local.formatted_vm_prefix}-app1-${var.clientcode}"
   network_interface_ids           = [azurerm_network_interface.nice-nic-app1.id]
   resource_group_name             = azurerm_resource_group.rg.name
@@ -206,11 +204,11 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
   tags = {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
-    nice_datacenter      = var.location
+    nice_datacenter      = var.loc
     nice_dr              = "false"
     nice_environment     = "preprod"
     nice_instanceid      = "WI104952" #<-----
-    nice_product         = var.service
+    nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "app"
     nice_state           = "live"
@@ -242,7 +240,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app2" {
   admin_password                  = var.password
   admin_username                  = var.vm-username-app2
   disable_password_authentication = false
-  location                        = var.location
+  location                        = var.loc
   name                            = "${local.formatted_vm_prefix}-app2-${var.clientcode}"
   network_interface_ids           = [azurerm_network_interface.nice-nic-app2.id]
   resource_group_name             = azurerm_resource_group.rg.name
@@ -251,11 +249,11 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app2" {
   tags = {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
-    nice_datacenter      = var.location
+    nice_datacenter      = var.loc
     nice_dr              = "false"
     nice_environment     = "preprod"
     nice_instanceid      = "WI104952"
-    nice_product         = var.service
+    nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "app"
     nice_state           = "live"
@@ -287,7 +285,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web1" {
   admin_password                  = var.password
   admin_username                  = var.vm-username-web1
   disable_password_authentication = false
-  location                        = var.location
+  location                        = var.loc
   name                            = "${local.formatted_vm_prefix}-web1-${var.clientcode}"
   network_interface_ids           = [azurerm_network_interface.nice-nic-web1.id]
   resource_group_name             = azurerm_resource_group.rg.name
@@ -296,11 +294,11 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web1" {
   tags = {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
-    nice_datacenter      = var.location
+    nice_datacenter      = var.loc
     nice_dr              = "false"
     nice_environment     = "preprod"
     nice_instanceid      = "WI104952"
-    nice_product         = var.service
+    nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "web"
     nice_state           = "live"
@@ -332,7 +330,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web2" {
   admin_password                  = var.password
   admin_username                  = var.vm-username-web2
   disable_password_authentication = false
-  location                        = var.location
+  location                        = var.loc
   name                            = "${local.formatted_vm_prefix}-web2-${var.clientcode}"
   network_interface_ids           = [azurerm_network_interface.nice-nic-web2.id]
   resource_group_name             = azurerm_resource_group.rg.name
@@ -341,11 +339,11 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web2" {
   tags = {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
-    nice_datacenter      = var.location
+    nice_datacenter      = var.loc
     nice_dr              = "false"
     nice_environment     = "preprod"
     nice_instanceid      = "WI104952"
-    nice_product         = var.service
+    nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "web"
     nice_state           = "live"
@@ -377,7 +375,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web2" {
 # VM Managed Disks
 resource "azurerm_managed_disk" "nice-managed-disk-web1" {
   create_option = "Empty"
-  location      = var.location
+  location      = var.loc
   # name                 = "wfm-tl-web1-clb_DataDisk_0"
   name                 = "${local.formatted_vm_prefix}-web1-${var.clientcode}_DataDisk_0"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -390,7 +388,7 @@ resource "azurerm_managed_disk" "nice-managed-disk-web1" {
 }
 resource "azurerm_managed_disk" "nice-managed-disk-web2" {
   create_option = "Empty"
-  location      = var.location
+  location      = var.loc
   # name                 = "wfm-tl-web2-clb_DataDisk_0"
   name                 = "${local.formatted_vm_prefix}-web2-${var.clientcode}_DataDisk_0"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -426,12 +424,12 @@ resource "azurerm_virtual_machine_data_disk_attachment" "nice-vm-datadisk-atch-w
 
 # Azure Load Balancer
 resource "azurerm_lb" "nice-loadbalancer" {
-  location            = var.location
-  name                = "${local.formatted_name_for_rg}-lb-${var.instance}"
+  location            = var.loc
+  name                = "${local.formatted_name_for_rg}-lb-${var.inst}"
   resource_group_name = azurerm_resource_group.rg.name
   sku                 = "Standard"
   frontend_ip_configuration {
-    name      = "${local.formatted_name_for_rg}-ip-${var.instance}"
+    name      = "${local.formatted_name_for_rg}-ip-${var.inst}"
     zones     = ["1", "2", "3"]
     subnet_id = var.subnet-ids.frontend
   }
@@ -441,7 +439,7 @@ resource "azurerm_lb" "nice-loadbalancer" {
 }
 resource "azurerm_lb_backend_address_pool" "nice-be-addr-pool" {
   loadbalancer_id = azurerm_lb.nice-loadbalancer.id
-  name            = "${local.formatted_name_for_rg}-bp-${var.instance}"
+  name            = "${local.formatted_name_for_rg}-bp-${var.inst}"
   depends_on = [
     azurerm_lb.nice-loadbalancer,
   ]
@@ -450,7 +448,7 @@ resource "azurerm_lb_rule" "nice-lb-rule-tcp80" {
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.nice-be-addr-pool.id]
   backend_port                   = 80
   disable_outbound_snat          = true
-  frontend_ip_configuration_name = "${local.formatted_name_for_rg}-ip-${var.instance}"
+  frontend_ip_configuration_name = "${local.formatted_name_for_rg}-ip-${var.inst}"
   frontend_port                  = 80
   loadbalancer_id                = azurerm_lb.nice-loadbalancer.id
   name                           = "load-balancing-rule-tcp80"
@@ -463,7 +461,7 @@ resource "azurerm_lb_rule" "nice-lb-rule-tcp88" {
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.nice-be-addr-pool.id]
   backend_port                   = 88
   disable_outbound_snat          = true
-  frontend_ip_configuration_name = "${local.formatted_name_for_rg}-ip-${var.instance}"
+  frontend_ip_configuration_name = "${local.formatted_name_for_rg}-ip-${var.inst}"
   frontend_port                  = 88
   loadbalancer_id                = azurerm_lb.nice-loadbalancer.id
   name                           = "load-balancing-rule-tcp88"
@@ -497,7 +495,7 @@ resource "azurerm_lb_probe" "nice-lb-probe-tcp88" {
 resource "azurerm_postgresql_flexible_server" "nice-pgsql" {
   delegated_subnet_id = var.subnet-ids.data
   private_dns_zone_id = var.private-dns-zone-ids.database
-  location            = var.location
+  location            = var.loc
   # name                = "wfm-tl-dbs-clb"
   name                   = "${local.formatted_vm_prefix}-dbs-${var.clientcode}"
   resource_group_name    = azurerm_resource_group.rg.name
@@ -509,11 +507,11 @@ resource "azurerm_postgresql_flexible_server" "nice-pgsql" {
   tags = {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
-    nice_datacenter      = var.location
+    nice_datacenter      = var.loc
     nice_dr              = "false"
     nice_environment     = "preprod"
     nice_instanceid      = "WI104952"
-    nice_product         = var.service
+    nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "dbpostgres"
     nice_state           = "live"

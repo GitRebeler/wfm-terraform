@@ -13,6 +13,7 @@ deployment-number = "01"
 # VM configuration variables
 vm-size-app      = "Standard_DS1_v2"
 vm-size-web      = "Standard_DS1_v2"
+db-size          = "Standard_D16ds_v5"
 vm-username-app1 = "wfmtlapp1clbadmin"
 vm-username-app2 = "wfmtlapp2clbadmin"
 vm-username-web1 = "wfmtlweb1clbadmin"

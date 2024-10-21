@@ -54,6 +54,11 @@ variable "vm-size-web" {
   default = "Standard_D2s_v3"
 }
 
+variable "db-size" {
+  type    = string
+  default = "Standard_D16ds_v5"
+}
+
 variable "vm-username-app1" {
   type    = string
   default = "wfmtlapp1clbadmin"

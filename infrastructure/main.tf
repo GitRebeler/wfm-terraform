@@ -502,7 +502,7 @@ resource "azurerm_postgresql_flexible_server" "nice-pgsql" {
   administrator_login    = var.vm-username-db
   administrator_password = var.password
   sku_name               = var.db-size
-  storage_mb             = 700000
+  storage_mb             = 1048576 # should be 700 GB but the closes option rounded up to 1 TB
   version                = 16
   public_network_access_enabled = false
   tags = {

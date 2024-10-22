@@ -53,6 +53,15 @@ resource "azurerm_network_security_group" "nice-nsg-db" {
     azurerm_resource_group.rg,
   ]
 }
+resource "azurerm_network_security_group" "nice-nsg-ascwa" {
+  count = var.create-ascwa == true ? 1 : tonumber("0")
+  location            = var.loc
+  name                = "${local.formatted_vm_prefix}-ascwa-${var.clientcode}-nsg"
+  resource_group_name = azurerm_resource_group.rg.name
+  depends_on = [
+    azurerm_resource_group.rg,
+  ]
+}
 
 # NICs
 resource "azurerm_network_interface" "nice-nic-app1" {
@@ -153,9 +162,32 @@ resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-as
     azurerm_network_security_group.nice-nsg-web2,
   ]
 }
+resource "azurerm_network_interface" "nice-nic-ascwa" {
+  count = var.create-ascwa == true ? 1 : tonumber("0")
+  location                       = var.loc
+  name                           = "${local.formatted_vm_prefix}-ascwa-${var.clientcode}_z1"
+  resource_group_name            = azurerm_resource_group.rg.name
+  accelerated_networking_enabled = true
+  ip_configuration {
+    name                          = "ipconfig1"
+    private_ip_address_allocation = "Dynamic"
+    subnet_id                     = var.subnet-ids.application ########################################
+  }
+  depends_on = [
+    azurerm_resource_group.rg,
+  ]
+}
+resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-ascwa" {
+  count = var.create-ascwa == true ? 1 : tonumber("0")
+  network_interface_id      = azurerm_network_interface.nice-nic-ascwa.id
+  network_security_group_id = azurerm_network_security_group.nice-nsg-ascwa.id
+  depends_on = [
+    azurerm_network_interface.nice-nic-ascwa,
+    azurerm_network_security_group.nice-nsg-ascwa,
+  ]
+}
 
 resource "azurerm_private_endpoint" "nice-pvt-endpt" {
-  # custom_network_interface_name = "wfm-dev-use-01-clb-01-sa-01-pe-01-nic"
   custom_network_interface_name = "${var.svc}-${var.env}-${var.rgn}-${var.inst}-${var.clientcode}-${var.inst}-sa-${var.inst}-pe-${var.inst}-nic"
   location                      = var.loc
   name                          = "${var.svc}-${var.env}-${var.rgn}-${var.inst}-${var.clientcode}-${var.inst}-sa-${var.inst}-pe-${var.inst}"
@@ -205,9 +237,9 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
     nice_datacenter      = var.loc
-    nice_dr              = "false"
-    nice_environment     = "preprod"
-    nice_instanceid      = "WI104952" #<-----
+    nice_dr              = var.nice-dr
+    nice_environment     = var.nice-environment
+    nice_instanceid      = var.nice-instanceid
     nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "app"
@@ -232,6 +264,11 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
+  user_data = <<-EOF
+              #!/bin/bash
+              mkdir /etc/nca/
+              echo "Hello, World!" > /etc/nca/hello.txt
+              EOF
   depends_on = [
     azurerm_network_interface.nice-nic-app1,
   ]
@@ -250,9 +287,9 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app2" {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
     nice_datacenter      = var.loc
-    nice_dr              = "false"
-    nice_environment     = "preprod"
-    nice_instanceid      = "WI104952"
+    nice_dr              = var.nice-dr
+    nice_environment     = var.nice-environment
+    nice_instanceid      = var.nice-instanceid
     nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "app"
@@ -295,9 +332,9 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web1" {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
     nice_datacenter      = var.loc
-    nice_dr              = "false"
-    nice_environment     = "preprod"
-    nice_instanceid      = "WI104952"
+    nice_dr              = var.nice-dr
+    nice_environment     = var.nice-environment
+    nice_instanceid      = var.nice-instanceid
     nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "web"
@@ -340,12 +377,58 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web2" {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
     nice_datacenter      = var.loc
-    nice_dr              = "false"
-    nice_environment     = "preprod"
-    nice_instanceid      = "WI104952"
+    nice_dr              = var.nice-dr
+    nice_environment     = var.nice-environment
+    nice_instanceid      = var.nice-instanceid
     nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "web"
+    nice_state           = "live"
+  }
+  vtpm_enabled = true
+  zone         = "2"
+  additional_capabilities {
+  }
+  boot_diagnostics {
+  }
+  identity {
+    type = "SystemAssigned"
+  }
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+  source_image_reference {
+    offer     = var.image-config.offer
+    publisher = var.image-config.publisher
+    sku       = var.image-config.sku
+    version   = var.image-config.version
+  }
+  depends_on = [
+    azurerm_network_interface.nice-nic-web2,
+  ]
+}
+resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
+  count = var.create-ascwa == true ? 1 : tonumber("0")
+  admin_password                  = var.password
+  admin_username                  = var.vm-username-acswa
+  disable_password_authentication = false
+  location                        = var.loc
+  name                            = "${local.formatted_vm_prefix}-acs-${var.clientcode}"
+  network_interface_ids           = [azurerm_network_interface.nice-nic-web2.id]
+  resource_group_name             = azurerm_resource_group.rg.name
+  secure_boot_enabled             = true
+  size                            = var.vm-size-web
+  tags = {
+    nice_client          = var.client
+    nice_clientcode      = var.clientcode
+    nice_datacenter      = var.loc
+    nice_dr              = var.nice-dr
+    nice_environment     = var.nice-environment
+    nice_instanceid      = var.nice-instanceid
+    nice_product         = var.svc
+    nice_puppet_manifest = var.puppet-manifest
+    nice_serverrole      = "acswa"
     nice_state           = "live"
   }
   vtpm_enabled = true
@@ -509,9 +592,9 @@ resource "azurerm_postgresql_flexible_server" "nice-pgsql" {
     nice_client          = var.client
     nice_clientcode      = var.clientcode
     nice_datacenter      = var.loc
-    nice_dr              = "false"
-    nice_environment     = var.env
-    nice_instanceid      = "WI104952"
+    nice_dr              = var.nice-dr
+    nice_environment     = var.nice-environment
+    nice_instanceid      = var.nice-instanceid
     nice_product         = var.svc
     nice_puppet_manifest = var.puppet-manifest
     nice_serverrole      = "dbpostgres"

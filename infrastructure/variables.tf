@@ -54,6 +54,11 @@ variable "vm-size-web" {
   default = "Standard_D2s_v3"
 }
 
+variable "vm-size-acs" {
+  type    = string
+  default = "Standard_E16_v5"
+}
+
 variable "db-size" {
   type    = string
   default = "Standard_D16ds_v5"
@@ -84,6 +89,11 @@ variable "vm-username-db" {
   default = "wfmtldbclbadmin"
 }
 
+variable "vm-username-acswa" {
+  type    = string
+  default = "wfmtlacsclbadmin"
+}
+
 variable "password" {
   type    = string
   default = "E@gL3Ey3$!"
@@ -97,6 +107,36 @@ variable "puppet-manifest" {
 variable "deployment-number" {
   type    = string
   default = "01"
+}
+
+variable "nice-dr" {
+  type    = string
+  default = "false"
+}
+
+variable "nice-environment" {
+  type    = string
+  default = "preprod"
+}
+
+variable "nice-instanceid" {
+  type    = string
+  default = "WI104952"
+}
+
+variable "wfm-url" {
+  type    = string
+  default = "nmhc-wfm.nicecloudsvc.com"
+}
+
+variable "nde-url" {
+  type    = string
+  default = "nmhc-nde.nicecloudsvc.com"
+}
+
+variable "create-ascwa" {
+  type = bool
+  default = false
 }
 
 # Objects are populated in ../env-vars/<env>.tfvars

@@ -171,7 +171,7 @@ resource "azurerm_network_interface" "nice-nic-ascwa" {
   ip_configuration {
     name                          = "ipconfig1"
     private_ip_address_allocation = "Dynamic"
-    subnet_id                     = var.subnet-ids.application ########################################
+    subnet_id                     = var.subnet-ids.application
   }
   depends_on = [
     azurerm_resource_group.rg,
@@ -179,8 +179,8 @@ resource "azurerm_network_interface" "nice-nic-ascwa" {
 }
 resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-ascwa" {
   count = var.create-ascwa == true ? 1 : tonumber("0")
-  network_interface_id      = azurerm_network_interface.nice-nic-ascwa.id
-  network_security_group_id = azurerm_network_security_group.nice-nsg-ascwa.id
+  network_interface_id      = azurerm_network_interface.nice-nic-ascwa[count.index].id
+  network_security_group_id = azurerm_network_security_group.nice-nsg-ascwa[count.index].id
   depends_on = [
     azurerm_network_interface.nice-nic-ascwa,
     azurerm_network_security_group.nice-nsg-ascwa,
@@ -415,7 +415,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
   disable_password_authentication = false
   location                        = var.loc
   name                            = "${local.formatted_vm_prefix}-acs-${var.clientcode}"
-  network_interface_ids           = [azurerm_network_interface.nice-nic-web2.id]
+  network_interface_ids           = [azurerm_network_interface.nice-nic-ascwa[count.index].id]
   resource_group_name             = azurerm_resource_group.rg.name
   secure_boot_enabled             = true
   size                            = var.vm-size-web

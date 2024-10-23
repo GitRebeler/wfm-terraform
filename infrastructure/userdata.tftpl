@@ -7,10 +7,12 @@ echo "[INFO] ##############################################################"
 echo "[INFO] ##############################################################"
 echo "[INFO] ##############################################################"
 
-cat > /etc/hello.txt <<EOF
-    Hello, World!
-EOF
+sudo mkdir -p /etc/nca/
+# sudo touch /etc/nca/hello.txt
+echo "Hello, World!" > /etc/nca/hello.txt
 
 # sudo mkdir -p /etc/nca/
-# sudo touch /etc/nca/hello.txt
-#echo "Hello, World!" > /etc/nca/hello.txt
+# cat > /etc/nca/hello.txt <<EOF
+#     Hello, World!
+# EOF
+

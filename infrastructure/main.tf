@@ -25,7 +25,7 @@ locals {
     write_files = [
       {
         encoding = "b64"
-        content  = filebase64(templatefile("userdataInfra.tftpl", local.data_inputs))
+        content  = base64encode(templatefile("userdataInfra.tftpl", local.data_inputs))
         path     = "/etc/nca/infra.json"
       }
     ]

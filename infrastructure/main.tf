@@ -53,7 +53,8 @@ locals {
           permissions = "0644"
           owner       = "root:root"
           encoding    = "b64"
-          content     = filebase64("hello.txt")
+          content     = filebase64(templatefile("ud.tftpl", {vm_web1_name = local.vm_web1_name}))
+          # content     = filebase64("hello.txt")
         },
       ]
     })}

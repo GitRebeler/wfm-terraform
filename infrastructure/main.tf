@@ -39,7 +39,7 @@ locals {
           permissions = "0644"
           owner       = "root:root"
           encoding    = "b64"
-          content     = filebase64("${path.module}/hello.txt")
+          content     = filebase64("hello.txt")
         },
       ]
     })}

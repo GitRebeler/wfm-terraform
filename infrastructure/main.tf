@@ -30,6 +30,20 @@ locals {
   #     }
   #   ]
   # }
+  # cloud_config_config = <<-END
+  #   #cloud-config
+  #   ${jsonencode({
+  #     write_files = [
+  #       {
+  #         path        = "/etc/hello.txt"
+  #         permissions = "0644"
+  #         owner       = "root:root"
+  #         encoding    = "b64"
+  #         content     = filebase64(templatefile("ud.tftpl", local.data_inputs))
+  #       },
+  #     ]
+  #   })}
+  # END
   cloud_config_config = <<-END
     #cloud-config
     ${jsonencode({
@@ -39,7 +53,7 @@ locals {
           permissions = "0644"
           owner       = "root:root"
           encoding    = "b64"
-          content     = filebase64(templatefile("ud.tftpl", local.data_inputs))
+          content     = filebase64("hello.txt")
         },
       ]
     })}

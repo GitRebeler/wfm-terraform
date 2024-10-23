@@ -484,10 +484,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     version   = var.image-config.version
   }
   # user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
-  user_data = <<-EOT
-  #cloud-config
-  ${yamlencode(local.instance_user_data)}
-  EOT
+  user_data = base64encode("${yamlencode(local.instance_user_data)}")
 
   depends_on = [
     azurerm_network_interface.nice-nic-web2,

@@ -264,7 +264,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  user_data = base64encode("${file("setup.sh")}")
+  user_data = base64encode(templatefile("userdata.tftpl"))
   depends_on = [
     azurerm_network_interface.nice-nic-app1,
   ]

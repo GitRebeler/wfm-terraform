@@ -457,7 +457,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     storage_account_type = "Premium_LRS"
   }
   provisioner "file" {
-    content     = base64encode(templatefile("userdata-infra.tftpl", local.data_inputs))
+    content     = base64encode(templatefile("userdataInfra.tftpl", local.data_inputs))
     destination = "/etc/nca/infra.json"
     
   }

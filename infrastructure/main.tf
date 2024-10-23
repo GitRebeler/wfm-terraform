@@ -25,8 +25,8 @@ locals {
     write_files = [
       {
         encoding = "b64"
-        content  = filebase64(templatefile("userdataInfra.tftpl", local.data_inputs))
-        path     = "/etc/nca/infra.json"
+        content  = templatefile("ud.tftpl", local.data_inputs)
+        path     = "/tmp/infra.json"
       }
     ]
   }
@@ -289,7 +289,6 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  # user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
   depends_on = [
     azurerm_network_interface.nice-nic-app1,
   ]

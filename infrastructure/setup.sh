@@ -1,4 +1,4 @@
 #!/bin/bash
-sudo su
-mkdir /etc/nca/
-echo "Hello, World!" > /etc/nca/hello.txt
+sudo mkdir -p /etc/nca/
+sudo touch /etc/nca/hello.txt
+#echo "Hello, World!" > /etc/nca/hello.txt

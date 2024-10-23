@@ -5,8 +5,21 @@ locals {
   vm_name_prefix        = "${var.svc}-tl-"
   vm_web_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "web", i, "-", var.clientcode)]
   vm_app_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "app", i, "-", var.clientcode)]
+  vm_web1_name          = "${local.formatted_vm_prefix}-web1-${var.clientcode}"
+  vm_web2_name          = "${local.formatted_vm_prefix}-web2-${var.clientcode}"
+  vm_app1_name          = "${local.formatted_vm_prefix}-app1-${var.clientcode}"
+  vm_app2_name          = "${local.formatted_vm_prefix}-app2-${var.clientcode}"
+  vm_acs_name           = "${local.formatted_vm_prefix}-db-${var.clientcode}"
+  vm_db_name            = "${local.formatted_vm_prefix}-acs-${var.clientcode}"
   data_inputs = {
     service = var.svc
+    vm_web1_name = local.vm_web1_name
+    vm_web2_name = local.vm_web2_name
+    vm_app1_name = local.vm_app1_name
+    vm_app2_name = local.vm_app2_name
+    vm_acs_name = local.vm_acs_name
+    vm_db_name = local.vm_db_name
+    clientcode = var.clientcode
   }
 }
 
@@ -442,6 +455,11 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Premium_LRS"
+  }
+  provisioner "file" {
+    content     = base64encode(templatefile("userdata-infra.tftpl", local.data_inputs))
+    destination = "/etc/nca/infra.json"
+    
   }
   source_image_reference {
     offer     = var.image-config.offer

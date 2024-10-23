@@ -449,6 +449,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
+  user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
   depends_on = [
     azurerm_network_interface.nice-nic-web2,
   ]

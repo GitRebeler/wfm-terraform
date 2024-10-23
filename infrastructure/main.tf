@@ -21,6 +21,15 @@ locals {
     vm_db_name = local.vm_db_name
     clientcode = var.clientcode
   }
+  instance_user_data = {
+    write_files = [
+      {
+        encoding = "b64"
+        content  = filebase64(templatefile("userdataInfra.tftpl", local.data_inputs))
+        path     = "/etc/nca/infra.json"
+      }
+    ]
+  }
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -456,24 +465,30 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     caching              = "ReadWrite"
     storage_account_type = "Premium_LRS"
   }
-  provisioner "file" {
-    content     = base64encode(templatefile("userdataInfra.tftpl", local.data_inputs))
-    destination = "/etc/nca/infra.json"
+  # provisioner "file" {
+  #   content     = base64encode(templatefile("userdataInfra.tftpl", local.data_inputs))
+  #   destination = "/etc/nca/infra.json"
     
-    connection {
-      type="ssh"
-      user = var.vm-username-acswa
-      password = var.password
-      host = azurerm_linux_virtual_machine.nice-rhel-vm-acs[count.index].private_ip_address
-    }
-  }
+  #   connection {
+  #     type="ssh"
+  #     user = var.vm-username-acswa
+  #     password = var.password
+  #     host = azurerm_linux_virtual_machine.nice-rhel-vm-acs[count.index].private_ip_address
+  #   }
+  # }
+
   source_image_reference {
     offer     = var.image-config.offer
     publisher = var.image-config.publisher
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
+  # user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
+  user_data = <<-EOT
+  #cloud-config
+  ${yamlencode(local.instance_user_data)}
+  EOT
+
   depends_on = [
     azurerm_network_interface.nice-nic-web2,
   ]

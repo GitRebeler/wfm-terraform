@@ -30,6 +30,20 @@ locals {
       }
     ]
   }
+  cloud_config_config = <<-END
+    #cloud-config
+    ${jsonencode({
+      write_files = [
+        {
+          path        = "/etc/hello.txt"
+          permissions = "0644"
+          owner       = "root:root"
+          encoding    = "b64"
+          content     = filebase64("${path.module}/hello.txt")
+        },
+      ]
+    })}
+  END
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -483,7 +497,8 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     version   = var.image-config.version
   }
   # user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
-  user_data = base64encode("${yamlencode(local.instance_user_data)}")
+  # user_data = base64encode("${yamlencode(local.instance_user_data)}")
+  user_data = local.cloud_config_config
 
   depends_on = [
     azurerm_network_interface.nice-nic-web2,

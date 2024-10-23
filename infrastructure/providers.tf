@@ -7,6 +7,10 @@ terraform {
       version = "~>4.4"
 
     }
+    cloudinit = {
+      source  = "hashicorp/cloudinit"
+      version = "~>2.3.5"
+    }
   }
   backend "azurerm" {
     subscription_id      = "f784c856-2e5c-447e-a838-88cbe8650f5f"

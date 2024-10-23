@@ -21,15 +21,15 @@ locals {
     vm_db_name = local.vm_db_name
     clientcode = var.clientcode
   }
-  instance_user_data = {
-    write_files = [
-      {
-        encoding = "b64"
-        content  = file(templatefile("ud.tftpl", local.data_inputs))
-        path     = "/tmp/infra.json"
-      }
-    ]
-  }
+  # instance_user_data = {
+  #   write_files = [
+  #     {
+  #       encoding = "b64"
+  #       content  = file(templatefile("ud.tftpl", local.data_inputs))
+  #       path     = "/tmp/infra.json"
+  #     }
+  #   ]
+  # }
   cloud_config_config = <<-END
     #cloud-config
     ${jsonencode({

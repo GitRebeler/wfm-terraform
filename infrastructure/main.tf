@@ -25,7 +25,7 @@ locals {
     write_files = [
       {
         encoding = "b64"
-        content  = templatefile("ud.tftpl", local.data_inputs)
+        content  = file(templatefile("ud.tftpl", local.data_inputs))
         path     = "/tmp/infra.json"
       }
     ]

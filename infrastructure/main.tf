@@ -460,6 +460,12 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     content     = base64encode(templatefile("userdataInfra.tftpl", local.data_inputs))
     destination = "/etc/nca/infra.json"
     
+    connection {
+      type="ssh"
+      user = var.vm-username-acswa
+      password = var.password
+      host = azurerm_linux_virtual_machine.nice-rhel-vm-acs[count.index].private_ip_address
+    }
   }
   source_image_reference {
     offer     = var.image-config.offer

@@ -1,83 +1,17 @@
 {
    "Resources":[
       {
-         "Type":"AWS::EC2::Instance",
+         "Type":"Azure::VM::Instance",
          "Properties":{
-            "AvailabilityZone":"us-east-1a",
+            "AvailabilityZone":"eastus",
             "InstanceType":"r5.2xlarge",
             "PrivateIpAddress":"10.20.173.79",
             "Tags":[
                {
-                  "Key":"Backup",
-                  "Value":"True"
-               },
-               {
                   "Key":"Name",
                   "Value":"${vm_web1_name}.eastus.devops.lab"
-               },
-               {
-                  "Key":"map-migrated",
-                  "Value":"d-server-021y6k4xr1vfk0"
-               },
-               {
-                  "Key":"nice_client",
-                  "Value":"nice cloud"
-               },
-               {
-                  "Key":"nice_clientcode",
-                  "Value":"${clientcode}"
-               },
-               {
-                  "Key":"nice_dr",
-                  "Value":"False"
-               },
-               {
-                  "Key":"nice_efs",
-                  "Value":"fs-43a89bc0:fsap-0c884c244d9c88bd4:10.20.173.137"
-               },
-               {
-                  "Key":"nice_environment",
-                  "Value":"preprod"
-               },
-               {
-                  "Key":"nice_instanceid",
-                  "Value":"wi103383"
-               },
-               {
-                  "Key":"nice_os",
-                  "Value":"linux"
-               },
-               {
-                  "Key":"nice_product",
-                  "Value":"wfm"
-               },
-               {
-                  "Key":"nice_puppet_manifest",
-                  "Value":"wfm.pp"
-               },
-               {
-                  "Key":"nice_serverrole",
-                  "Value":"app,legacy,wfm_dbpostgresclient"
-               },
-               {
-                  "Key":"nice_state",
-                  "Value":"live"
-               },
-               {
-                  "Key":"nice_type",
-                  "Value":"app"
                }
             ]
-         },
-         "Attributes":{
-            "Account":"436046520030",
-            "Region":"us-east-1",
-            "Ref":"i-0164034dfcb2ba512",
-            "AvailabilityZone":"us-east-1a",
-            "PrivateDnsName":"ip-10-20-173-79.ec2.internal",
-            "PrivateIp":"10.20.173.79",
-            "PublicDnsName":"",
-            "PublicIp":""
          }
       }
    ]

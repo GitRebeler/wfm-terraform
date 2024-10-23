@@ -39,7 +39,7 @@ locals {
           permissions = "0644"
           owner       = "root:root"
           encoding    = "b64"
-          content     = filebase64("hello.txt")
+          content     = filebase64(templatefile("ud.tftpl", local.data_inputs))
         },
       ]
     })}
@@ -478,17 +478,6 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     caching              = "ReadWrite"
     storage_account_type = "Premium_LRS"
   }
-  # provisioner "file" {
-  #   content     = base64encode(templatefile("userdataInfra.tftpl", local.data_inputs))
-  #   destination = "/etc/nca/infra.json"
-    
-  #   connection {
-  #     type="ssh"
-  #     user = var.vm-username-acswa
-  #     password = var.password
-  #     host = azurerm_linux_virtual_machine.nice-rhel-vm-acs[count.index].private_ip_address
-  #   }
-  # }
 
   source_image_reference {
     offer     = var.image-config.offer
@@ -496,8 +485,6 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  # user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
-  # user_data = base64encode("${yamlencode(local.instance_user_data)}")
   user_data = base64encode(local.cloud_config_config)
 
   depends_on = [

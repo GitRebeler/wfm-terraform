@@ -5,6 +5,9 @@ locals {
   vm_name_prefix        = "${var.svc}-tl-"
   vm_web_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "web", i, "-", var.clientcode)]
   vm_app_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "app", i, "-", var.clientcode)]
+  data_inputs = {
+    service = var.svc
+  }
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -264,7 +267,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  user_data = base64encode(templatefile("userdata.tftpl"))
+  user_data = base64encode(templatefile("userdata.tftpl", local.data_inputs))
   depends_on = [
     azurerm_network_interface.nice-nic-app1,
   ]

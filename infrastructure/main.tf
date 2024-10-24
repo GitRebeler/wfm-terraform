@@ -47,20 +47,20 @@ locals {
   # infra_jason_output = templatefile("${path.module}/infra.json.tftpl", {
   #   vm_web1_name = local.vm_web1_name
   # })
-  # cloud_config_config = <<-END
-  #   #cloud-config
-  #   ${jsonencode({
-  #     write_files = [
-  #       {
-  #         path        = "/etc/infra.json"
-  #         permissions = "0644"
-  #         owner       = "root:root"
-  #         encoding    = "b64"
-  #         content     = file("${local.infra_jason_output}")
-  #       },
-  #     ]
-  #   })}
-  # END
+  cloud_config_config = <<-END
+    #cloud-config
+    ${jsonencode({
+      write_files = [
+        {
+          path        = "/etc/infra.json"
+          permissions = "0644"
+          owner       = "root:root"
+          encoding    = "b64"
+          content     = "${data.template_file.infra_jason_output.rendered}"
+        },
+      ]
+    })}
+  END
 }
 
 data "template_file" "infra_jason_output" {
@@ -75,19 +75,18 @@ data "template_file" "infra_jason_output" {
 }
 
 data "template_cloudinit_config" "config" {
-  gzip          = true
+  gzip          = false
   base64_encode = true
 
   part {
     filename     = "/etc/infra.json"
-    content_type = "text/cloud-config"
     content      = "${data.template_file.infra_jason_output.rendered}"
   }
 }
 
 resource "azurerm_resource_group" "rg" {
   location = var.loc
-  name     = "${local.formatted_name_for_rg}-rg"
+  name     = "${local.formatted_name_for_rg}-rg-jh"
 }
 
 # NSGs
@@ -524,7 +523,8 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  user_data = data.template_cloudinit_config.config.rendered
+  # user_data = data.template_cloudinit_config.config.rendered
+  user_data = base64encode(local.cloud_config_config)
 
   depends_on = [
     azurerm_network_interface.nice-nic-ascwa,

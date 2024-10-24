@@ -87,7 +87,7 @@ data "template_cloudinit_config" "config" {
 
 resource "azurerm_resource_group" "rg" {
   location = var.loc
-  name     = "${local.formatted_name_for_rg}-rg-jh"
+  name     = "${local.formatted_name_for_rg}-rg"
 }
 
 # NSGs

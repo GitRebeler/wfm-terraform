@@ -71,7 +71,7 @@ data "template_file" "infra_jason_output" {
 #   }
     vars = {
       vm_web1_name = local.vm_web1_name
-      vm_web1_ip = azurerm_linux_virtual_machine.nice-rhel-vm-acs[0].private_ip_address
+      vm_web1_ip = azurerm_linux_virtual_machine.nice-rhel-vm-acs.private_ip_address
     }
 }
 

@@ -132,7 +132,7 @@ resource "azurerm_resource_group" "rg" {
 #   ]
 # }
 resource "azurerm_network_security_group" "nice-nsg-ascwa" {
-  count = var.create-ascwa == true ? 1 : tonumber("0")
+  # count = var.create-ascwa == true ? 1 : tonumber("0")
   location            = var.loc
   name                = "${local.formatted_vm_prefix}-ascwa-${var.clientcode}-nsg"
   resource_group_name = azurerm_resource_group.rg.name
@@ -241,7 +241,7 @@ resource "azurerm_network_security_group" "nice-nsg-ascwa" {
 #   ]
 # }
 resource "azurerm_network_interface" "nice-nic-ascwa" {
-  count = var.create-ascwa == true ? 1 : tonumber("0")
+  # count = var.create-ascwa == true ? 1 : tonumber("0")
   location                       = var.loc
   name                           = "${local.formatted_vm_prefix}-ascwa-${var.clientcode}_z1"
   resource_group_name            = azurerm_resource_group.rg.name
@@ -256,9 +256,11 @@ resource "azurerm_network_interface" "nice-nic-ascwa" {
   ]
 }
 resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-ascwa" {
-  count = var.create-ascwa == true ? 1 : tonumber("0")
-  network_interface_id      = azurerm_network_interface.nice-nic-ascwa[count.index].id
-  network_security_group_id = azurerm_network_security_group.nice-nsg-ascwa[count.index].id
+  # count = var.create-ascwa == true ? 1 : tonumber("0")
+  # network_interface_id      = azurerm_network_interface.nice-nic-ascwa[count.index].id
+  # network_security_group_id = azurerm_network_security_group.nice-nsg-ascwa[count.index].id
+  network_interface_id      = azurerm_network_interface.nice-nic-ascwa.id
+  network_security_group_id = azurerm_network_security_group.nice-nsg-ascwa.id
   depends_on = [
     azurerm_network_interface.nice-nic-ascwa,
     azurerm_network_security_group.nice-nsg-ascwa,
@@ -482,13 +484,14 @@ resource "azurerm_storage_account" "nice-storage-acct" {
 #   ]
 # }
 resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
-  count = var.create-ascwa == true ? 1 : tonumber("0")
+  # count = var.create-ascwa == true ? 1 : tonumber("0")
   admin_password                  = var.password
   admin_username                  = var.vm-username-acswa
   disable_password_authentication = false
   location                        = var.loc
   name                            = "${local.formatted_vm_prefix}-acs-${var.clientcode}"
-  network_interface_ids           = [azurerm_network_interface.nice-nic-ascwa[count.index].id]
+  # network_interface_ids           = [azurerm_network_interface.nice-nic-ascwa[count.index].id]
+  network_interface_ids           = [azurerm_network_interface.nice-nic-ascwa.id]
   resource_group_name             = azurerm_resource_group.rg.name
   secure_boot_enabled             = true
   size                            = var.vm-size-web

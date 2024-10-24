@@ -503,7 +503,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
   user_data = base64encode(local.cloud_config_config)
 
   depends_on = [
-    azurerm_network_interface.nice-nic-web2,
+    azurerm_network_interface.nice-nic-ascwa,
   ]
 }
 

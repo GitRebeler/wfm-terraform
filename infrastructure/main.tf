@@ -44,23 +44,45 @@ locals {
   #     ]
   #   })}
   # END
-  infra_jason_output = templatefile("${path.module}/infra.json.tftpl", {
-    vm_web1_name = local.vm_web1_name
-  })
-  cloud_config_config = <<-END
-    #cloud-config
-    ${jsonencode({
-      write_files = [
-        {
-          path        = "/etc/infra.json"
-          permissions = "0644"
-          owner       = "root:root"
-          encoding    = "b64"
-          content     = "${local.infra_jason_output}"
-        },
-      ]
-    })}
-  END
+  # infra_jason_output = templatefile("${path.module}/infra.json.tftpl", {
+  #   vm_web1_name = local.vm_web1_name
+  # })
+  # cloud_config_config = <<-END
+  #   #cloud-config
+  #   ${jsonencode({
+  #     write_files = [
+  #       {
+  #         path        = "/etc/infra.json"
+  #         permissions = "0644"
+  #         owner       = "root:root"
+  #         encoding    = "b64"
+  #         content     = file("${local.infra_jason_output}")
+  #       },
+  #     ]
+  #   })}
+  # END
+}
+
+data "template_file" "infra_jason_output" {
+  template = "${file("${path.module}/infra.json.tftpl")}"
+
+#   vars = {
+#     consul_address = "${aws_instance.consul.private_ip}"
+#   }
+    vars = {
+      vm_web1_name = local.vm_web1_name
+    }
+}
+
+data "template_cloudinit_config" "config" {
+  gzip          = true
+  base64_encode = true
+
+  part {
+    filename     = "/etc/infra.json"
+    content_type = "text/cloud-config"
+    content      = "${data.template_file.infra_jason_output.rendered}"
+  }
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -502,7 +524,7 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  user_data = base64encode(local.cloud_config_config)
+  user_data = data.template_cloudinit_config.config.rendered
 
   depends_on = [
     azurerm_network_interface.nice-nic-ascwa,

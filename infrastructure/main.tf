@@ -67,46 +67,46 @@ resource "azurerm_resource_group" "rg" {
 }
 
 # NSGs
-resource "azurerm_network_security_group" "nice-nsg-app1" {
-  location            = var.loc
-  name                = "${local.formatted_vm_prefix}-app1-${var.clientcode}-nsg"
-  resource_group_name = azurerm_resource_group.rg.name
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_security_group" "nice-nsg-app2" {
-  location            = var.loc
-  name                = "${local.formatted_vm_prefix}-app2-${var.clientcode}-nsg"
-  resource_group_name = azurerm_resource_group.rg.name
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_security_group" "nice-nsg-web1" {
-  location            = var.loc
-  name                = "${local.formatted_vm_prefix}-web1-${var.clientcode}-nsg"
-  resource_group_name = azurerm_resource_group.rg.name
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_security_group" "nice-nsg-web2" {
-  location            = var.loc
-  name                = "${local.formatted_vm_prefix}-web2-${var.clientcode}-nsg"
-  resource_group_name = azurerm_resource_group.rg.name
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_security_group" "nice-nsg-db" {
-  location            = var.loc
-  name                = "${local.formatted_vm_prefix}-db-${var.clientcode}-nsg"
-  resource_group_name = azurerm_resource_group.rg.name
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
+# resource "azurerm_network_security_group" "nice-nsg-app1" {
+#   location            = var.loc
+#   name                = "${local.formatted_vm_prefix}-app1-${var.clientcode}-nsg"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_security_group" "nice-nsg-app2" {
+#   location            = var.loc
+#   name                = "${local.formatted_vm_prefix}-app2-${var.clientcode}-nsg"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_security_group" "nice-nsg-web1" {
+#   location            = var.loc
+#   name                = "${local.formatted_vm_prefix}-web1-${var.clientcode}-nsg"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_security_group" "nice-nsg-web2" {
+#   location            = var.loc
+#   name                = "${local.formatted_vm_prefix}-web2-${var.clientcode}-nsg"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_security_group" "nice-nsg-db" {
+#   location            = var.loc
+#   name                = "${local.formatted_vm_prefix}-db-${var.clientcode}-nsg"
+#   resource_group_name = azurerm_resource_group.rg.name
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
 resource "azurerm_network_security_group" "nice-nsg-ascwa" {
   count = var.create-ascwa == true ? 1 : tonumber("0")
   location            = var.loc
@@ -118,104 +118,104 @@ resource "azurerm_network_security_group" "nice-nsg-ascwa" {
 }
 
 # NICs
-resource "azurerm_network_interface" "nice-nic-app1" {
-  location                       = var.loc
-  name                           = "${local.formatted_vm_prefix}-app1-${var.clientcode}_z1"
-  resource_group_name            = azurerm_resource_group.rg.name
-  accelerated_networking_enabled = true
-  ip_configuration {
-    name                          = "ipconfig1"
-    private_ip_address_allocation = "Dynamic"
-    subnet_id                     = var.subnet-ids.application
-  }
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-app1" {
-  network_interface_id      = azurerm_network_interface.nice-nic-app1.id
-  network_security_group_id = azurerm_network_security_group.nice-nsg-app1.id
-  depends_on = [
-    azurerm_network_interface.nice-nic-app1,
-    azurerm_network_security_group.nice-nsg-app1,
-  ]
-}
-resource "azurerm_network_interface" "nice-nic-app2" {
-  location                       = var.loc
-  name                           = "${local.formatted_vm_prefix}-app2-${var.clientcode}_z2"
-  resource_group_name            = azurerm_resource_group.rg.name
-  accelerated_networking_enabled = true
-  ip_configuration {
-    name                          = "ipconfig1"
-    private_ip_address_allocation = "Dynamic"
-    subnet_id                     = var.subnet-ids.application
-  }
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-app2" {
-  network_interface_id      = azurerm_network_interface.nice-nic-app2.id
-  network_security_group_id = azurerm_network_security_group.nice-nsg-app2.id
-  depends_on = [
-    azurerm_network_interface.nice-nic-app2,
-    azurerm_network_security_group.nice-nsg-app2,
-  ]
-}
-resource "azurerm_network_interface" "nice-nic-web1" {
-  location                       = var.loc
-  name                           = "${local.formatted_vm_prefix}-web1-${var.clientcode}_z1"
-  resource_group_name            = azurerm_resource_group.rg.name
-  accelerated_networking_enabled = true
-  ip_configuration {
-    name                          = "ipconfig1"
-    private_ip_address_allocation = "Dynamic"
-    subnet_id                     = var.subnet-ids.frontend
-  }
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_interface_backend_address_pool_association" "nice-nic-bea-asc-web1" {
-  backend_address_pool_id = azurerm_lb_backend_address_pool.nice-be-addr-pool.id
-  ip_configuration_name   = "ipconfig1"
-  network_interface_id    = azurerm_network_interface.nice-nic-web1.id
-  depends_on = [
-    azurerm_lb_backend_address_pool.nice-be-addr-pool,
-    azurerm_network_interface.nice-nic-web1,
-  ]
-}
-resource "azurerm_network_interface" "nice-nic-web2" {
-  location                       = var.loc
-  name                           = "${local.formatted_vm_prefix}-web2-${var.clientcode}_z2"
-  resource_group_name            = azurerm_resource_group.rg.name
-  accelerated_networking_enabled = true
-  ip_configuration {
-    name                          = "ipconfig1"
-    private_ip_address_allocation = "Dynamic"
-    subnet_id                     = var.subnet-ids.frontend
-  }
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_network_interface_backend_address_pool_association" "nice-nic-bea-asc-web2" {
-  backend_address_pool_id = azurerm_lb_backend_address_pool.nice-be-addr-pool.id
-  ip_configuration_name   = "ipconfig1"
-  network_interface_id    = azurerm_network_interface.nice-nic-web2.id
-  depends_on = [
-    azurerm_lb_backend_address_pool.nice-be-addr-pool,
-    azurerm_network_interface.nice-nic-web2,
-  ]
-}
-resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-web2" {
-  network_interface_id      = azurerm_network_interface.nice-nic-web2.id
-  network_security_group_id = azurerm_network_security_group.nice-nsg-web2.id
-  depends_on = [
-    azurerm_network_interface.nice-nic-web2,
-    azurerm_network_security_group.nice-nsg-web2,
-  ]
-}
+# resource "azurerm_network_interface" "nice-nic-app1" {
+#   location                       = var.loc
+#   name                           = "${local.formatted_vm_prefix}-app1-${var.clientcode}_z1"
+#   resource_group_name            = azurerm_resource_group.rg.name
+#   accelerated_networking_enabled = true
+#   ip_configuration {
+#     name                          = "ipconfig1"
+#     private_ip_address_allocation = "Dynamic"
+#     subnet_id                     = var.subnet-ids.application
+#   }
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-app1" {
+#   network_interface_id      = azurerm_network_interface.nice-nic-app1.id
+#   network_security_group_id = azurerm_network_security_group.nice-nsg-app1.id
+#   depends_on = [
+#     azurerm_network_interface.nice-nic-app1,
+#     azurerm_network_security_group.nice-nsg-app1,
+#   ]
+# }
+# resource "azurerm_network_interface" "nice-nic-app2" {
+#   location                       = var.loc
+#   name                           = "${local.formatted_vm_prefix}-app2-${var.clientcode}_z2"
+#   resource_group_name            = azurerm_resource_group.rg.name
+#   accelerated_networking_enabled = true
+#   ip_configuration {
+#     name                          = "ipconfig1"
+#     private_ip_address_allocation = "Dynamic"
+#     subnet_id                     = var.subnet-ids.application
+#   }
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-app2" {
+#   network_interface_id      = azurerm_network_interface.nice-nic-app2.id
+#   network_security_group_id = azurerm_network_security_group.nice-nsg-app2.id
+#   depends_on = [
+#     azurerm_network_interface.nice-nic-app2,
+#     azurerm_network_security_group.nice-nsg-app2,
+#   ]
+# }
+# resource "azurerm_network_interface" "nice-nic-web1" {
+#   location                       = var.loc
+#   name                           = "${local.formatted_vm_prefix}-web1-${var.clientcode}_z1"
+#   resource_group_name            = azurerm_resource_group.rg.name
+#   accelerated_networking_enabled = true
+#   ip_configuration {
+#     name                          = "ipconfig1"
+#     private_ip_address_allocation = "Dynamic"
+#     subnet_id                     = var.subnet-ids.frontend
+#   }
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_interface_backend_address_pool_association" "nice-nic-bea-asc-web1" {
+#   backend_address_pool_id = azurerm_lb_backend_address_pool.nice-be-addr-pool.id
+#   ip_configuration_name   = "ipconfig1"
+#   network_interface_id    = azurerm_network_interface.nice-nic-web1.id
+#   depends_on = [
+#     azurerm_lb_backend_address_pool.nice-be-addr-pool,
+#     azurerm_network_interface.nice-nic-web1,
+#   ]
+# }
+# resource "azurerm_network_interface" "nice-nic-web2" {
+#   location                       = var.loc
+#   name                           = "${local.formatted_vm_prefix}-web2-${var.clientcode}_z2"
+#   resource_group_name            = azurerm_resource_group.rg.name
+#   accelerated_networking_enabled = true
+#   ip_configuration {
+#     name                          = "ipconfig1"
+#     private_ip_address_allocation = "Dynamic"
+#     subnet_id                     = var.subnet-ids.frontend
+#   }
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_network_interface_backend_address_pool_association" "nice-nic-bea-asc-web2" {
+#   backend_address_pool_id = azurerm_lb_backend_address_pool.nice-be-addr-pool.id
+#   ip_configuration_name   = "ipconfig1"
+#   network_interface_id    = azurerm_network_interface.nice-nic-web2.id
+#   depends_on = [
+#     azurerm_lb_backend_address_pool.nice-be-addr-pool,
+#     azurerm_network_interface.nice-nic-web2,
+#   ]
+# }
+# resource "azurerm_network_interface_security_group_association" "nice-nic-nsg-asc-web2" {
+#   network_interface_id      = azurerm_network_interface.nice-nic-web2.id
+#   network_security_group_id = azurerm_network_security_group.nice-nsg-web2.id
+#   depends_on = [
+#     azurerm_network_interface.nice-nic-web2,
+#     azurerm_network_security_group.nice-nsg-web2,
+#   ]
+# }
 resource "azurerm_network_interface" "nice-nic-ascwa" {
   count = var.create-ascwa == true ? 1 : tonumber("0")
   location                       = var.loc
@@ -277,186 +277,186 @@ resource "azurerm_storage_account" "nice-storage-acct" {
 }
 
 # Virtual Machines
-resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
-  admin_password                  = var.password
-  admin_username                  = var.vm-username-app1
-  disable_password_authentication = false
-  location                        = var.loc
-  name                            = "${local.formatted_vm_prefix}-app1-${var.clientcode}"
-  network_interface_ids           = [azurerm_network_interface.nice-nic-app1.id]
-  resource_group_name             = azurerm_resource_group.rg.name
-  secure_boot_enabled             = true
-  size                            = var.vm-size-app
-  tags = {
-    nice_client          = var.client
-    nice_clientcode      = var.clientcode
-    nice_datacenter      = var.loc
-    nice_dr              = var.nice-dr
-    nice_environment     = var.nice-environment
-    nice_instanceid      = var.nice-instanceid
-    nice_product         = var.svc
-    nice_puppet_manifest = var.puppet-manifest
-    nice_serverrole      = "app"
-    nice_state           = "live"
-  }
-  vtpm_enabled = true
-  zone         = "1"
-  additional_capabilities {
-  }
-  boot_diagnostics {
-  }
-  identity {
-    type = "SystemAssigned"
-  }
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Premium_LRS"
-  }
-  source_image_reference {
-    offer     = var.image-config.offer
-    publisher = var.image-config.publisher
-    sku       = var.image-config.sku
-    version   = var.image-config.version
-  }
-  depends_on = [
-    azurerm_network_interface.nice-nic-app1,
-  ]
-}
-resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app2" {
-  admin_password                  = var.password
-  admin_username                  = var.vm-username-app2
-  disable_password_authentication = false
-  location                        = var.loc
-  name                            = "${local.formatted_vm_prefix}-app2-${var.clientcode}"
-  network_interface_ids           = [azurerm_network_interface.nice-nic-app2.id]
-  resource_group_name             = azurerm_resource_group.rg.name
-  secure_boot_enabled             = true
-  size                            = var.vm-size-app
-  tags = {
-    nice_client          = var.client
-    nice_clientcode      = var.clientcode
-    nice_datacenter      = var.loc
-    nice_dr              = var.nice-dr
-    nice_environment     = var.nice-environment
-    nice_instanceid      = var.nice-instanceid
-    nice_product         = var.svc
-    nice_puppet_manifest = var.puppet-manifest
-    nice_serverrole      = "app"
-    nice_state           = "live"
-  }
-  vtpm_enabled = true
-  zone         = "2"
-  additional_capabilities {
-  }
-  boot_diagnostics {
-  }
-  identity {
-    type = "SystemAssigned"
-  }
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Premium_LRS"
-  }
-  source_image_reference {
-    offer     = var.image-config.offer
-    publisher = var.image-config.publisher
-    sku       = var.image-config.sku
-    version   = var.image-config.version
-  }
-  depends_on = [
-    azurerm_network_interface.nice-nic-app2,
-  ]
-}
-resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web1" {
-  admin_password                  = var.password
-  admin_username                  = var.vm-username-web1
-  disable_password_authentication = false
-  location                        = var.loc
-  name                            = "${local.formatted_vm_prefix}-web1-${var.clientcode}"
-  network_interface_ids           = [azurerm_network_interface.nice-nic-web1.id]
-  resource_group_name             = azurerm_resource_group.rg.name
-  secure_boot_enabled             = true
-  size                            = var.vm-size-web
-  tags = {
-    nice_client          = var.client
-    nice_clientcode      = var.clientcode
-    nice_datacenter      = var.loc
-    nice_dr              = var.nice-dr
-    nice_environment     = var.nice-environment
-    nice_instanceid      = var.nice-instanceid
-    nice_product         = var.svc
-    nice_puppet_manifest = var.puppet-manifest
-    nice_serverrole      = "web"
-    nice_state           = "live"
-  }
-  vtpm_enabled = true
-  zone         = "1"
-  additional_capabilities {
-  }
-  boot_diagnostics {
-  }
-  identity {
-    type = "SystemAssigned"
-  }
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Premium_LRS"
-  }
-  source_image_reference {
-    offer     = var.image-config.offer
-    publisher = var.image-config.publisher
-    sku       = var.image-config.sku
-    version   = var.image-config.version
-  }
-  depends_on = [
-    azurerm_network_interface.nice-nic-web1,
-  ]
-}
-resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web2" {
-  admin_password                  = var.password
-  admin_username                  = var.vm-username-web2
-  disable_password_authentication = false
-  location                        = var.loc
-  name                            = "${local.formatted_vm_prefix}-web2-${var.clientcode}"
-  network_interface_ids           = [azurerm_network_interface.nice-nic-web2.id]
-  resource_group_name             = azurerm_resource_group.rg.name
-  secure_boot_enabled             = true
-  size                            = var.vm-size-web
-  tags = {
-    nice_client          = var.client
-    nice_clientcode      = var.clientcode
-    nice_datacenter      = var.loc
-    nice_dr              = var.nice-dr
-    nice_environment     = var.nice-environment
-    nice_instanceid      = var.nice-instanceid
-    nice_product         = var.svc
-    nice_puppet_manifest = var.puppet-manifest
-    nice_serverrole      = "web"
-    nice_state           = "live"
-  }
-  vtpm_enabled = true
-  zone         = "2"
-  additional_capabilities {
-  }
-  boot_diagnostics {
-  }
-  identity {
-    type = "SystemAssigned"
-  }
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Premium_LRS"
-  }
-  source_image_reference {
-    offer     = var.image-config.offer
-    publisher = var.image-config.publisher
-    sku       = var.image-config.sku
-    version   = var.image-config.version
-  }
-  depends_on = [
-    azurerm_network_interface.nice-nic-web2,
-  ]
-}
+# resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app1" {
+#   admin_password                  = var.password
+#   admin_username                  = var.vm-username-app1
+#   disable_password_authentication = false
+#   location                        = var.loc
+#   name                            = "${local.formatted_vm_prefix}-app1-${var.clientcode}"
+#   network_interface_ids           = [azurerm_network_interface.nice-nic-app1.id]
+#   resource_group_name             = azurerm_resource_group.rg.name
+#   secure_boot_enabled             = true
+#   size                            = var.vm-size-app
+#   tags = {
+#     nice_client          = var.client
+#     nice_clientcode      = var.clientcode
+#     nice_datacenter      = var.loc
+#     nice_dr              = var.nice-dr
+#     nice_environment     = var.nice-environment
+#     nice_instanceid      = var.nice-instanceid
+#     nice_product         = var.svc
+#     nice_puppet_manifest = var.puppet-manifest
+#     nice_serverrole      = "app"
+#     nice_state           = "live"
+#   }
+#   vtpm_enabled = true
+#   zone         = "1"
+#   additional_capabilities {
+#   }
+#   boot_diagnostics {
+#   }
+#   identity {
+#     type = "SystemAssigned"
+#   }
+#   os_disk {
+#     caching              = "ReadWrite"
+#     storage_account_type = "Premium_LRS"
+#   }
+#   source_image_reference {
+#     offer     = var.image-config.offer
+#     publisher = var.image-config.publisher
+#     sku       = var.image-config.sku
+#     version   = var.image-config.version
+#   }
+#   depends_on = [
+#     azurerm_network_interface.nice-nic-app1,
+#   ]
+# }
+# resource "azurerm_linux_virtual_machine" "nice-rhel-vm-app2" {
+#   admin_password                  = var.password
+#   admin_username                  = var.vm-username-app2
+#   disable_password_authentication = false
+#   location                        = var.loc
+#   name                            = "${local.formatted_vm_prefix}-app2-${var.clientcode}"
+#   network_interface_ids           = [azurerm_network_interface.nice-nic-app2.id]
+#   resource_group_name             = azurerm_resource_group.rg.name
+#   secure_boot_enabled             = true
+#   size                            = var.vm-size-app
+#   tags = {
+#     nice_client          = var.client
+#     nice_clientcode      = var.clientcode
+#     nice_datacenter      = var.loc
+#     nice_dr              = var.nice-dr
+#     nice_environment     = var.nice-environment
+#     nice_instanceid      = var.nice-instanceid
+#     nice_product         = var.svc
+#     nice_puppet_manifest = var.puppet-manifest
+#     nice_serverrole      = "app"
+#     nice_state           = "live"
+#   }
+#   vtpm_enabled = true
+#   zone         = "2"
+#   additional_capabilities {
+#   }
+#   boot_diagnostics {
+#   }
+#   identity {
+#     type = "SystemAssigned"
+#   }
+#   os_disk {
+#     caching              = "ReadWrite"
+#     storage_account_type = "Premium_LRS"
+#   }
+#   source_image_reference {
+#     offer     = var.image-config.offer
+#     publisher = var.image-config.publisher
+#     sku       = var.image-config.sku
+#     version   = var.image-config.version
+#   }
+#   depends_on = [
+#     azurerm_network_interface.nice-nic-app2,
+#   ]
+# }
+# resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web1" {
+#   admin_password                  = var.password
+#   admin_username                  = var.vm-username-web1
+#   disable_password_authentication = false
+#   location                        = var.loc
+#   name                            = "${local.formatted_vm_prefix}-web1-${var.clientcode}"
+#   network_interface_ids           = [azurerm_network_interface.nice-nic-web1.id]
+#   resource_group_name             = azurerm_resource_group.rg.name
+#   secure_boot_enabled             = true
+#   size                            = var.vm-size-web
+#   tags = {
+#     nice_client          = var.client
+#     nice_clientcode      = var.clientcode
+#     nice_datacenter      = var.loc
+#     nice_dr              = var.nice-dr
+#     nice_environment     = var.nice-environment
+#     nice_instanceid      = var.nice-instanceid
+#     nice_product         = var.svc
+#     nice_puppet_manifest = var.puppet-manifest
+#     nice_serverrole      = "web"
+#     nice_state           = "live"
+#   }
+#   vtpm_enabled = true
+#   zone         = "1"
+#   additional_capabilities {
+#   }
+#   boot_diagnostics {
+#   }
+#   identity {
+#     type = "SystemAssigned"
+#   }
+#   os_disk {
+#     caching              = "ReadWrite"
+#     storage_account_type = "Premium_LRS"
+#   }
+#   source_image_reference {
+#     offer     = var.image-config.offer
+#     publisher = var.image-config.publisher
+#     sku       = var.image-config.sku
+#     version   = var.image-config.version
+#   }
+#   depends_on = [
+#     azurerm_network_interface.nice-nic-web1,
+#   ]
+# }
+# resource "azurerm_linux_virtual_machine" "nice-rhel-vm-web2" {
+#   admin_password                  = var.password
+#   admin_username                  = var.vm-username-web2
+#   disable_password_authentication = false
+#   location                        = var.loc
+#   name                            = "${local.formatted_vm_prefix}-web2-${var.clientcode}"
+#   network_interface_ids           = [azurerm_network_interface.nice-nic-web2.id]
+#   resource_group_name             = azurerm_resource_group.rg.name
+#   secure_boot_enabled             = true
+#   size                            = var.vm-size-web
+#   tags = {
+#     nice_client          = var.client
+#     nice_clientcode      = var.clientcode
+#     nice_datacenter      = var.loc
+#     nice_dr              = var.nice-dr
+#     nice_environment     = var.nice-environment
+#     nice_instanceid      = var.nice-instanceid
+#     nice_product         = var.svc
+#     nice_puppet_manifest = var.puppet-manifest
+#     nice_serverrole      = "web"
+#     nice_state           = "live"
+#   }
+#   vtpm_enabled = true
+#   zone         = "2"
+#   additional_capabilities {
+#   }
+#   boot_diagnostics {
+#   }
+#   identity {
+#     type = "SystemAssigned"
+#   }
+#   os_disk {
+#     caching              = "ReadWrite"
+#     storage_account_type = "Premium_LRS"
+#   }
+#   source_image_reference {
+#     offer     = var.image-config.offer
+#     publisher = var.image-config.publisher
+#     sku       = var.image-config.sku
+#     version   = var.image-config.version
+#   }
+#   depends_on = [
+#     azurerm_network_interface.nice-nic-web2,
+#   ]
+# }
 resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
   count = var.create-ascwa == true ? 1 : tonumber("0")
   admin_password                  = var.password
@@ -508,54 +508,54 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
 }
 
 # VM Managed Disks
-resource "azurerm_managed_disk" "nice-managed-disk-web1" {
-  create_option = "Empty"
-  location      = var.loc
-  # name                 = "wfm-tl-web1-clb_DataDisk_0"
-  name                 = "${local.formatted_vm_prefix}-web1-${var.clientcode}_DataDisk_0"
-  resource_group_name  = azurerm_resource_group.rg.name
-  storage_account_type = "StandardSSD_LRS"
-  disk_size_gb         = 64
-  zone                 = "1"
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_managed_disk" "nice-managed-disk-web2" {
-  create_option = "Empty"
-  location      = var.loc
-  # name                 = "wfm-tl-web2-clb_DataDisk_0"
-  name                 = "${local.formatted_vm_prefix}-web2-${var.clientcode}_DataDisk_0"
-  resource_group_name  = azurerm_resource_group.rg.name
-  storage_account_type = "StandardSSD_LRS"
-  disk_size_gb         = 64
-  zone                 = "2"
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
+# resource "azurerm_managed_disk" "nice-managed-disk-web1" {
+#   create_option = "Empty"
+#   location      = var.loc
+#   # name                 = "wfm-tl-web1-clb_DataDisk_0"
+#   name                 = "${local.formatted_vm_prefix}-web1-${var.clientcode}_DataDisk_0"
+#   resource_group_name  = azurerm_resource_group.rg.name
+#   storage_account_type = "StandardSSD_LRS"
+#   disk_size_gb         = 64
+#   zone                 = "1"
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_managed_disk" "nice-managed-disk-web2" {
+#   create_option = "Empty"
+#   location      = var.loc
+#   # name                 = "wfm-tl-web2-clb_DataDisk_0"
+#   name                 = "${local.formatted_vm_prefix}-web2-${var.clientcode}_DataDisk_0"
+#   resource_group_name  = azurerm_resource_group.rg.name
+#   storage_account_type = "StandardSSD_LRS"
+#   disk_size_gb         = 64
+#   zone                 = "2"
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
 
-# Attaching the VM Managed Disks
-resource "azurerm_virtual_machine_data_disk_attachment" "nice-vm-datadisk-atch-web1" {
-  caching            = "ReadOnly"
-  lun                = 0
-  managed_disk_id    = azurerm_managed_disk.nice-managed-disk-web1.id
-  virtual_machine_id = azurerm_linux_virtual_machine.nice-rhel-vm-web1.id
-  depends_on = [
-    azurerm_linux_virtual_machine.nice-rhel-vm-web1,
-    azurerm_managed_disk.nice-managed-disk-web1,
-  ]
-}
-resource "azurerm_virtual_machine_data_disk_attachment" "nice-vm-datadisk-atch-web2" {
-  caching            = "ReadOnly"
-  lun                = 0
-  managed_disk_id    = azurerm_managed_disk.nice-managed-disk-web2.id
-  virtual_machine_id = azurerm_linux_virtual_machine.nice-rhel-vm-web2.id
-  depends_on = [
-    azurerm_linux_virtual_machine.nice-rhel-vm-web2,
-    azurerm_managed_disk.nice-managed-disk-web2,
-  ]
-}
+# # Attaching the VM Managed Disks
+# resource "azurerm_virtual_machine_data_disk_attachment" "nice-vm-datadisk-atch-web1" {
+#   caching            = "ReadOnly"
+#   lun                = 0
+#   managed_disk_id    = azurerm_managed_disk.nice-managed-disk-web1.id
+#   virtual_machine_id = azurerm_linux_virtual_machine.nice-rhel-vm-web1.id
+#   depends_on = [
+#     azurerm_linux_virtual_machine.nice-rhel-vm-web1,
+#     azurerm_managed_disk.nice-managed-disk-web1,
+#   ]
+# }
+# resource "azurerm_virtual_machine_data_disk_attachment" "nice-vm-datadisk-atch-web2" {
+#   caching            = "ReadOnly"
+#   lun                = 0
+#   managed_disk_id    = azurerm_managed_disk.nice-managed-disk-web2.id
+#   virtual_machine_id = azurerm_linux_virtual_machine.nice-rhel-vm-web2.id
+#   depends_on = [
+#     azurerm_linux_virtual_machine.nice-rhel-vm-web2,
+#     azurerm_managed_disk.nice-managed-disk-web2,
+#   ]
+# }
 
 # Azure Load Balancer
 resource "azurerm_lb" "nice-loadbalancer" {
@@ -627,44 +627,55 @@ resource "azurerm_lb_probe" "nice-lb-probe-tcp88" {
 }
 
 # Azure Datebae for PostgresSQL flexible server
-resource "azurerm_postgresql_flexible_server" "nice-pgsql" {
-  delegated_subnet_id = var.subnet-ids.data
-  private_dns_zone_id = var.private-dns-zone-ids.database
-  location            = var.loc
-  # name                = "wfm-tl-dbs-clb"
-  name                   = "${local.formatted_vm_prefix}-dbs-${var.clientcode}"
-  resource_group_name    = azurerm_resource_group.rg.name
-  administrator_login    = var.vm-username-db
-  administrator_password = var.password
-  sku_name               = var.db-size
-  storage_mb             = 1048576 # should be 700 GB but the closes option rounded up to 1 TB
-  version                = 16
-  public_network_access_enabled = false
-  tags = {
-    nice_client          = var.client
-    nice_clientcode      = var.clientcode
-    nice_datacenter      = var.loc
-    nice_dr              = var.nice-dr
-    nice_environment     = var.nice-environment
-    nice_instanceid      = var.nice-instanceid
-    nice_product         = var.svc
-    nice_puppet_manifest = var.puppet-manifest
-    nice_serverrole      = "dbpostgres"
-    nice_state           = "live"
-  }
-  zone = "3"
-  depends_on = [
-    azurerm_resource_group.rg,
-  ]
-}
-resource "azurerm_postgresql_flexible_server_configuration" "pgsql-sec-transport" {
-  name      = "require_secure_transport"
-  server_id = azurerm_postgresql_flexible_server.nice-pgsql.id
-  value     = "OFF"
-  depends_on = [
-    azurerm_postgresql_flexible_server.nice-pgsql,
-  ]
-}
+# resource "azurerm_postgresql_flexible_server" "nice-pgsql" {
+#   delegated_subnet_id = var.subnet-ids.data
+#   private_dns_zone_id = var.private-dns-zone-ids.database
+#   location            = var.loc
+#   # name                = "wfm-tl-dbs-clb"
+#   name                   = "${local.formatted_vm_prefix}-dbs-${var.clientcode}"
+#   resource_group_name    = azurerm_resource_group.rg.name
+#   administrator_login    = var.vm-username-db
+#   administrator_password = var.password
+#   sku_name               = var.db-size
+#   storage_mb             = 1048576 # should be 700 GB but the closes option rounded up to 1 TB
+#   version                = 16
+#   public_network_access_enabled = false
+#   tags = {
+#     nice_client          = var.client
+#     nice_clientcode      = var.clientcode
+#     nice_datacenter      = var.loc
+#     nice_dr              = var.nice-dr
+#     nice_environment     = var.nice-environment
+#     nice_instanceid      = var.nice-instanceid
+#     nice_product         = var.svc
+#     nice_puppet_manifest = var.puppet-manifest
+#     nice_serverrole      = "dbpostgres"
+#     nice_state           = "live"
+#   }
+#   zone = "3"
+#   depends_on = [
+#     azurerm_resource_group.rg,
+#   ]
+# }
+# resource "azurerm_postgresql_flexible_server_configuration" "pgsql-sec-transport" {
+#   name      = "require_secure_transport"
+#   server_id = azurerm_postgresql_flexible_server.nice-pgsql.id
+#   value     = "OFF"
+#   depends_on = [
+#     azurerm_postgresql_flexible_server.nice-pgsql,
+#   ]
+# }
+
+
+
+
+
+
+
+
+
+
+
 # resource "azurerm_postgresql_flexible_server_configuration" "res-10" {
 #   name      = "DateStyle"
 #   server_id = "/subscriptions/194a41a1-5592-4d4f-a8db-9eba93938aa2/resourceGroups/wfm-dev-use-01-clb-01-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/wfm-tl-dbs-clb"

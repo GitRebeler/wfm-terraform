@@ -72,7 +72,7 @@ data "template_file" "infra_jason_output" {
 #   }
     vars = {
       vm_web1_name = local.vm_web1_name
-      vm_web1_ip = local.vm_app2_name
+      vm_web1_ip = local.vm_acs_ip
     }
 }
 

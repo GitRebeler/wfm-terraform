@@ -8,7 +8,7 @@ cat > /etc/infra.json << EOF
          "Properties":{
             "AvailabilityZone":"us-east-1a",
             "InstanceType":"r5.2xlarge",
-            "PrivateIpAddress":"10.20.173.79",
+            "PrivateIpAddress":"${vm_acs_ip}",
             "Tags":[
                {
                   "Key":"Backup",

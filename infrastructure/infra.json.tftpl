@@ -7,7 +7,7 @@ cat > /etc/infra.json << EOF
          "Type":"AWS::EC2::Instance",
          "Properties":{
             "AvailabilityZone":"${loc}",
-            "InstanceType":"${var.vm-size-acs}",
+            "InstanceType":"${vm-size-acs}",
             "PrivateIpAddress":"${vm_acs_ip}",
             "Tags":[
                {

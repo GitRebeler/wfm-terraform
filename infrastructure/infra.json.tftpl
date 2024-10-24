@@ -85,7 +85,7 @@ cat > /etc/nca/infra.json << EOF
          }
       }
    ],
-   "Summary":"CLIENT:\n  NAME      : nice cloud\n  CODE      : cl2\n\nEC2 Instances:\n  NAME      : ${vm_app1_name}\n  IP        : 10.20.173.79\n  NAME      : ${vm_app2_name}\n  IP        : 10.20.173.123\n  NAME      : ${vm_web1_name}\n  IP        : 10.20.173.22\n  NAME      : ${vm_web1_name}\n  IP        : 10.20.173.38\n\nDB:\n  NAME      : wfm-stg-clb4\n  ADDRESS   : wfm-stg-clb4.cluster-cagbpugt0hqc.us-east-1.rds.amazonAzure.com\n  USER      : pgsqladmin\n\nINTERNAL LB:\n  ADDRESS   : wfm-dev-eus-01-clb-02-lb\n\nPUBLIC URLS:\n  ${wfm-url}\n  ${nde-url}\n",
+   "Summary":"CLIENT:\n  NAME      : nice cloud\n  CODE      : cl2\n\nEC2 Instances:\n  NAME      : ${vm_app1_name}\n  IP        : 10.20.173.79\n  NAME      : ${vm_app2_name}\n  IP        : 10.20.173.123\n  NAME      : ${vm_web1_name}\n  IP        : 10.20.173.22\n  NAME      : ${vm_web1_name}\n  IP        : 10.20.173.38\n\nDB:\n  NAME      : wfm-stg-clb4\n  ADDRESS   : ${vm_db_name}\n  USER      : pgsqladmin\n\nINTERNAL LB:\n  ADDRESS   : ${lb_name}\n\nPUBLIC URLS:\n  ${wfm-url}\n  ${nde-url}\n",
    "PublicURLs":[
       "${wfm-url}",
       "${nde-url}"

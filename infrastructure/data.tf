@@ -11,6 +11,7 @@ data "template_file" "infra_jason_output" {
       vm_app2_name          = local.vm_app2_name
       vm_acs_name           = local.vm_acs_name
       vm_db_name            = local.vm_db_name
+      lb_name               = local.lb_name
       vm-size-app           = var.vm-size-app
       vm-size-web           = var.vm-size-web
       vm-size-acs           = var.vm-size-acs

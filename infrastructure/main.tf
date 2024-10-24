@@ -44,17 +44,19 @@ locals {
   #     ]
   #   })}
   # END
+  infra_jason_output = templatefile("${path.module}/infra.json.tftpl", {
+    vm_web1_name = local.vm_web1_name
+  })
   cloud_config_config = <<-END
     #cloud-config
     ${jsonencode({
       write_files = [
         {
-          path        = "/etc/hello.txt"
+          path        = "/etc/infra.json"
           permissions = "0644"
           owner       = "root:root"
           encoding    = "b64"
-          content     = filebase64(templatefile("${path.cwd}/hello.txt", {vm_web1_name = local.vm_web1_name}))
-          # content     = filebase64("hello.txt")
+          content     = "${local.infra_jason_output}"
         },
       ]
     })}

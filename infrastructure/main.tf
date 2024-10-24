@@ -66,7 +66,7 @@ locals {
 
 resource "azurerm_resource_group" "rg" {
   location = var.loc
-  name     = "${local.formatted_name_for_rg}-rg"
+  name     = "${local.formatted_name_for_rg}-rg-jh"
 }
 
 # NSGs

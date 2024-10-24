@@ -523,8 +523,8 @@ resource "azurerm_linux_virtual_machine" "nice-rhel-vm-acs" {
     sku       = var.image-config.sku
     version   = var.image-config.version
   }
-  # user_data = data.template_cloudinit_config.config.rendered
-  user_data = base64encode(local.cloud_config_config)
+  user_data = data.template_cloudinit_config.config.rendered
+  # user_data = base64encode(local.cloud_config_config)
 
   depends_on = [
     azurerm_network_interface.nice-nic-ascwa,

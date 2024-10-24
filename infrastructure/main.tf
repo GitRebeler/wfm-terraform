@@ -11,7 +11,7 @@ locals {
   vm_app2_name          = "${local.formatted_vm_prefix}-app2-${var.clientcode}"
   vm_acs_name           = "${local.formatted_vm_prefix}-db-${var.clientcode}"
   vm_db_name            = "${local.formatted_vm_prefix}-acs-${var.clientcode}"
-  vm_acs_ip             = azurerm_linux_virtual_machine.nice-rhel-vm-acs.private_ip_address
+  vm_acs_ip             = azurerm_linux_virtual_machine.nice-rhel-vm-acs.id
   data_inputs = {
     service = var.svc
     vm_web1_name = local.vm_web1_name

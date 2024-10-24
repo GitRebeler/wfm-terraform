@@ -6,8 +6,8 @@ cat > /etc/infra.json << EOF
       {
          "Type":"AWS::EC2::Instance",
          "Properties":{
-            "AvailabilityZone":"us-east-1a",
-            "InstanceType":"r5.2xlarge",
+            "AvailabilityZone":"${loc}",
+            "InstanceType":"${var.vm-size-acs}",
             "PrivateIpAddress":"${vm_acs_ip}",
             "Tags":[
                {
@@ -24,15 +24,15 @@ cat > /etc/infra.json << EOF
                },
                {
                   "Key":"nice_client",
-                  "Value":"nice cloud"
+                  "Value":"${client}"
                },
                {
                   "Key":"nice_clientcode",
-                  "Value":"cl2"
+                  "Value":"${clientcode}"
                },
                {
                   "Key":"nice_dr",
-                  "Value":"False"
+                  "Value":"${nice_dr}"
                },
                {
                   "Key":"nice_efs",
@@ -40,11 +40,11 @@ cat > /etc/infra.json << EOF
                },
                {
                   "Key":"nice_environment",
-                  "Value":"preprod"
+                  "Value":"${nice-environment}"
                },
                {
                   "Key":"nice_instanceid",
-                  "Value":"wi103383"
+                  "Value":"${nice-instanceid}"
                },
                {
                   "Key":"nice_os",
@@ -52,7 +52,7 @@ cat > /etc/infra.json << EOF
                },
                {
                   "Key":"nice_product",
-                  "Value":"wfm"
+                  "Value":"${svc}"
                },
                {
                   "Key":"nice_puppet_manifest",
@@ -74,9 +74,9 @@ cat > /etc/infra.json << EOF
          },
          "Attributes":{
             "Account":"436046520030",
-            "Region":"us-east-1",
+            "Region":"${loc}",
             "Ref":"i-0164034dfcb2ba512",
-            "AvailabilityZone":"us-east-1a",
+            "AvailabilityZone":"${loc}",
             "PrivateDnsName":"ip-10-20-173-79.ec2.internal",
             "PrivateIp":"10.20.173.79",
             "PublicDnsName":"",
@@ -84,10 +84,10 @@ cat > /etc/infra.json << EOF
          }
       }
    ],
-   "Summary":"CLIENT:\n  NAME      : nice cloud\n  CODE      : cl2\n\nEC2 Instances:\n  NAME      : wfm-tl-app1-clb.eastus.devops.lab\n  IP        : 10.20.173.79\n  NAME      : wfm-tl-app2-clb.eastus.devops.lab\n  IP        : 10.20.173.123\n  NAME      : wfm-tl-web1-clb.eastus.devops.lab\n  IP        : 10.20.173.22\n  NAME      : wfm-tl-web2-clb.eastus.devops.lab\n  IP        : 10.20.173.38\n\nDB:\n  NAME      : wfm-stg-clb4\n  ADDRESS   : wfm-stg-clb4.cluster-cagbpugt0hqc.us-east-1.rds.amazonAzure.com\n  USER      : pgsqladmin\n\nINTERNAL LB:\n  ADDRESS   : wfm-dev-eus-01-clb-02-lb\n\nPUBLIC URLS:\n  https://wfm74cl2.nicecloudsvc-stg1.com\n  https://wfm74cl2-diag.nicecloudsvc-stg1.com\n",
+   "Summary":"CLIENT:\n  NAME      : nice cloud\n  CODE      : cl2\n\nEC2 Instances:\n  NAME      : ${vm_app1_name}\n  IP        : 10.20.173.79\n  NAME      : ${vm_app2_name}\n  IP        : 10.20.173.123\n  NAME      : ${vm_web1_name}\n  IP        : 10.20.173.22\n  NAME      : ${vm_web1_name}\n  IP        : 10.20.173.38\n\nDB:\n  NAME      : wfm-stg-clb4\n  ADDRESS   : wfm-stg-clb4.cluster-cagbpugt0hqc.us-east-1.rds.amazonAzure.com\n  USER      : pgsqladmin\n\nINTERNAL LB:\n  ADDRESS   : wfm-dev-eus-01-clb-02-lb\n\nPUBLIC URLS:\n  ${wfm-url}\n  ${nde-url}\n",
    "PublicURLs":[
-      "https://cloudlabs1-wfm.nicedevops.com",
-      "https://cloudlabs1-wfm-diag.nicedevops.com"
+      "${wfm-url}",
+      "${nde-url}"
    ]
 }
 EOF

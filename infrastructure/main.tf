@@ -5,11 +5,11 @@ locals {
   vm_name_prefix        = "${var.svc}-tl-"
   vm_web_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "web", i, "-", var.clientcode)]
   vm_app_names          = [for i in range(1, (var.deployment-number + 1)) : format("%s%s%02d%s%s", local.vm_name_prefix, "app", i, "-", var.clientcode)]
-  vm_web1_name          = "${local.formatted_vm_prefix}-web1-${var.clientcode}"
-  vm_web2_name          = "${local.formatted_vm_prefix}-web2-${var.clientcode}"
-  vm_app1_name          = "${local.formatted_vm_prefix}-app1-${var.clientcode}"
-  vm_app2_name          = "${local.formatted_vm_prefix}-app2-${var.clientcode}"
-  vm_acs_name           = "${local.formatted_vm_prefix}-db-${var.clientcode}"
+  vm_web1_name          = "${local.formatted_vm_prefix}-web1-${var.clientcode}.${var.loc}.devops.lab"
+  vm_web2_name          = "${local.formatted_vm_prefix}-web2-${var.clientcode}.${var.loc}.devops.lab"
+  vm_app1_name          = "${local.formatted_vm_prefix}-app1-${var.clientcode}.${var.loc}.devops.lab"
+  vm_app2_name          = "${local.formatted_vm_prefix}-app2-${var.clientcode}.${var.loc}.devops.lab"
+  vm_acs_name           = "${local.formatted_vm_prefix}-db-${var.clientcode}.${var.loc}.devops.lab"
   vm_db_name            = "${local.formatted_vm_prefix}-acs-${var.clientcode}"
   data_inputs = {
     service = var.svc
@@ -70,8 +70,25 @@ data "template_file" "infra_jason_output" {
 #     consul_address = "${aws_instance.consul.private_ip}"
 #   }
     vars = {
-      vm_web1_name = local.vm_web1_name
-      vm_web1_ip = azurerm_linux_virtual_machine.nice-rhel-vm-acs.id
+      vm_web1_name          = local.vm_web1_name
+      vm_web2_name          = local.vm_web2_name
+      vm_app1_name          = local.vm_app1_name
+      vm_app2_name          = local.vm_app2_name
+      vm_acs_name           = local.vm_acs_name
+      vm_db_name            = local.vm_db_name
+      vm-size-app           = var.vm-size-app
+      vm-size-web           = var.vm-size-web
+      vm-size-acs           = var.vm-size-acs
+      db-size               = var.db-size
+      clientcode            = var.clientcode
+      client                = var.client
+      nice_dr               = var.nice-dr
+      nice-environment      = var.nice-environment
+      nice-instanceid       = var.nice-instanceid
+      svc                   = var.svc
+      loc                   = var.loc
+      wfm-url               = var.wfm-url
+      nde-url               = var.nde-url
     }
 }
 
